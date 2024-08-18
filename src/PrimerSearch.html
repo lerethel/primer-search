@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
+	<link rel="stylesheet" href="res/PrimerSearch.css">
+	<script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script>
+	<script src="res/PrimerSearch.js" defer></script>
+	<title>PrimerSearch</title>
+</head>
+
+<body>
+	<div id="seq-form">
+		<div class="form-header">FASTA gene sequence</div>
+		<div id="seq" contenteditable="true"></div>
+		<button type="button" id="convert-btn">Join and mark exons</button>
+		<input type="checkbox" id="convert-on-paste" checked>
+		<label for="convert-on-paste">Join and mark on copy</label>
+		<label for="gene-name">Gene name:</label>
+		<input type="text" id="gene-name" autocomplete="off">
+	</div>
+	<div id="primer-form">
+		<div class="form-header">Primers</div>
+		<button type="button" id="add-primer-pair-btn">Add pair</button>
+		<div id="primer-pair-list">
+			<template id="primer-pair-template">
+				<div class="primer-pair">
+					<label>F: <input type="text" class="primer"></label>
+					<label>R: <input type="text" class="primer"></label>
+					<button type="button" class="remove-primer-pair-btn" title="Remove primer pair">×</button>
+					<div class="primer-pair-bottom">
+						<div class="primer-pair-controls">
+							<button type="button" title="Mark primer pair in gene sequence"
+								class="mark-primer-pair-btn"><img src="res/icons/star.svg"></button>
+							<button type="button" title="Copy primer pair info"
+								class="copy-pair-info-btn"><img src="res/icons/copy.svg"></button>
+						</div>
+						<span class="product-length">Product length: {pl}</span>
+					</div>
+				</div>
+			</template>
+		</div>
+	</div>
+
+</body>
+
+</html>

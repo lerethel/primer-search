@@ -1,0 +1,136 @@
+:root {
+    --forward-mark-color: orange;
+    --reverse-mark-color: plum;
+}
+
+body {
+    font-family: "Calibri";
+}
+
+#seq-form {
+    float: left;
+    width: 67vw;
+    height: 85vh;
+}
+
+#seq {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    padding: 5px;
+    border: 1px solid;
+    word-break: break-all;
+}
+
+#convert-btn {
+    margin-top: 5px;
+}
+
+label[for="gene-name"] {
+    margin-left: 10px;
+}
+
+#gene-name {
+    width: 4vw;
+}
+
+.even {
+    color: red;
+}
+
+.odd {
+    color: blue;
+}
+
+mark {
+    color: currentColor;
+}
+
+.forward-mark {
+    background: var(--forward-mark-color);
+}
+
+.reverse-mark {
+    background: var(--reverse-mark-color);
+}
+
+#primer-form {
+    float: right;
+    width: 30vw;
+    height: 85vh;
+}
+
+.form-header {
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#primer-pair-list {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    margin-top: 10px;
+}
+
+.primer-pair {
+    margin-top: 2px;
+    padding: 10px;
+    border-left: 3px solid rgba(128, 128, 128, .4);
+}
+
+.primer-pair.marked {
+    border-left: 3px solid red;
+}
+
+.primer-pair-bottom {
+    margin-top: 5px;
+}
+
+.remove-primer-pair-btn {
+    visibility: hidden;
+    margin-left: 5px;
+    padding: 0;
+    background: inherit;
+    border: 0;
+}
+
+#primer-pair-list.remove-btn-shown .remove-primer-pair-btn {
+    visibility: visible;
+}
+
+.product-length {
+    visibility: hidden;
+    margin-left: 25px;
+}
+
+.product-length.shown {
+    visibility: visible;
+}
+
+.primer {
+    width: 35%;
+}
+
+.primer-pair.marked label:first-of-type .primer {
+    box-shadow: 0 0 4px var(--forward-mark-color);
+}
+
+.primer-pair.marked label:last-of-type .primer {
+    box-shadow: 0 0 4px var(--reverse-mark-color);
+}
+
+.primer-pair-controls {
+    display: inline-block;
+}
+
+.primer-pair-controls button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}
+
+.primer-pair-controls button img {
+    width: 100%;
+    height: 100%;
+}
