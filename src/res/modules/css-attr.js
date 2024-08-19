@@ -3,8 +3,7 @@ export const seqId = "seq";
 export const convertOnPasteId = "convert-on-paste";
 export const geneNameId = "gene-name";
 
-export const evenExonClass = "even";
-export const oddExonClass = "odd";
+export const exonClass = "exon";
 
 export const primerPairClass = "primer-pair";
 export const primerClass = "primer";

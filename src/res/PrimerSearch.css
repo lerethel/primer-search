@@ -1,136 +1,142 @@
+@import url("https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css");
+
 :root {
-    --forward-mark-color: orange;
-    --reverse-mark-color: plum;
+  --forward-mark-color: orange;
+  --reverse-mark-color: plum;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-    font-family: "Calibri";
-}
-
-#seq-form {
-    float: left;
-    width: 67vw;
-    height: 85vh;
-}
-
-#seq {
-    overflow-x: hidden;
-    overflow-y: auto;
-    height: 100%;
-    padding: 5px;
-    border: 1px solid;
-    word-break: break-all;
-}
-
-#convert-btn {
-    margin-top: 5px;
-}
-
-label[for="gene-name"] {
-    margin-left: 10px;
-}
-
-#gene-name {
-    width: 4vw;
-}
-
-.even {
-    color: red;
-}
-
-.odd {
-    color: blue;
-}
-
-mark {
-    color: currentColor;
-}
-
-.forward-mark {
-    background: var(--forward-mark-color);
-}
-
-.reverse-mark {
-    background: var(--reverse-mark-color);
-}
-
-#primer-form {
-    float: right;
-    width: 30vw;
-    height: 85vh;
+  display: flex;
+  justify-content: space-between;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
 .form-header {
-    margin-bottom: 5px;
-    font-weight: bold;
-    text-align: center;
+  height: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  line-height: 1rem;
+  text-align: center;
+}
+
+#seq-form {
+  width: 65vw;
+  height: 85vh;
+}
+
+#seq {
+  overflow: hidden auto;
+  height: calc(100% - 1.5rem);
+  padding: 0.5rem;
+  border: 1px solid;
+  word-break: break-all;
+}
+
+#convert-btn {
+  margin-top: 0.5rem;
+}
+
+label[for="gene-name"] {
+  margin-left: 0.5rem;
+}
+
+#gene-name {
+  width: 4vw;
+}
+
+.exon:nth-child(even) {
+  color: red;
+}
+
+.exon:nth-child(odd) {
+  color: blue;
+}
+
+mark {
+  color: currentcolor;
+}
+
+.forward-mark {
+  background: var(--forward-mark-color);
+}
+
+.reverse-mark {
+  background: var(--reverse-mark-color);
+}
+
+#primer-form {
+  width: 30vw;
+  height: 85vh;
 }
 
 #primer-pair-list {
-    overflow-x: hidden;
-    overflow-y: auto;
-    height: 100%;
-    margin-top: 10px;
+  overflow: hidden auto;
+  height: 100%;
+  margin-top: 1rem;
 }
 
 .primer-pair {
-    margin-top: 2px;
-    padding: 10px;
-    border-left: 3px solid rgba(128, 128, 128, .4);
+  margin-bottom: 0.2rem;
+  padding: 0.7rem;
+  border-left: 3px solid rgba(128 128 128 / 40%);
 }
 
 .primer-pair.marked {
-    border-left: 3px solid red;
+  border-left: 3px solid red;
 }
 
 .primer-pair-bottom {
-    margin-top: 5px;
+  margin-top: 0.5rem;
 }
 
 .remove-primer-pair-btn {
-    visibility: hidden;
-    margin-left: 5px;
-    padding: 0;
-    background: inherit;
-    border: 0;
+  visibility: hidden;
+  margin-left: 0.2rem;
+  padding: 0;
+  background: inherit;
+  border: 0;
 }
 
 #primer-pair-list.remove-btn-shown .remove-primer-pair-btn {
-    visibility: visible;
+  visibility: visible;
 }
 
 .product-length {
-    visibility: hidden;
-    margin-left: 25px;
+  visibility: hidden;
+  margin-left: 1.5rem;
 }
 
 .product-length.shown {
-    visibility: visible;
+  visibility: visible;
 }
 
 .primer {
-    width: 35%;
+  width: 35%;
 }
 
 .primer-pair.marked label:first-of-type .primer {
-    box-shadow: 0 0 4px var(--forward-mark-color);
+  box-shadow: 0 0 4px var(--forward-mark-color);
 }
 
 .primer-pair.marked label:last-of-type .primer {
-    box-shadow: 0 0 4px var(--reverse-mark-color);
+  box-shadow: 0 0 4px var(--reverse-mark-color);
 }
 
 .primer-pair-controls {
-    display: inline-block;
+  display: inline-block;
 }
 
 .primer-pair-controls button {
-    width: 20px;
-    height: 20px;
-    padding: 0;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0;
 }
 
 .primer-pair-controls button img {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }

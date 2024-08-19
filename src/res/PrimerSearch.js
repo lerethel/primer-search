@@ -10,7 +10,7 @@ import * as pair from "./modules/pair.js";
 cE.convertBtn.addEventListener(
   "click",
   () => {
-    if (cE.seq.innerHTML.includes(`<span class="${css.evenExonClass}">`)) {
+    if (cE.seq.innerHTML.includes(`<span class="${css.exonClass}">`)) {
       fn.info(not.iSequenceAlreadyConverted);
       return;
     }
@@ -53,11 +53,9 @@ function concatenateExons(text) {
         result += "</span>";
       }
 
-      result += `<span class="${
-        currentExon % 2 === 0 ? css.evenExonClass : css.oddExonClass
-      }">`;
-
+      result += `<span class="${css.exonClass}">`;
       currentExon++;
+
       return result;
     }) + (currentExon ? "</span>" : "");
 
