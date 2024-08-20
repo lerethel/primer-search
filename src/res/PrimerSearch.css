@@ -10,42 +10,60 @@
 }
 
 body {
-  display: flex;
-  justify-content: space-between;
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
-.form-header {
-  height: 1rem;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  line-height: 1rem;
-  text-align: center;
+/* RULES FOR BOTH SECTIONS */
+
+main {
+  display: flex;
+  column-gap: 5vw;
 }
 
-#seq-form {
-  width: 65vw;
+.form {
+  display: flex;
+  flex-direction: column;
   height: 85vh;
 }
 
-#seq {
+.form:first-of-type {
+  flex: 2;
+}
+
+.form:last-of-type {
+  flex: 1;
+}
+
+.form-header {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.data {
+  flex: 1;
   overflow: hidden auto;
-  height: calc(100% - 1.5rem);
+}
+
+.footer {
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+/* GENE SEQUENCE SECTION */
+
+#seq {
   padding: 0.5rem;
   border: 1px solid;
   word-break: break-all;
 }
 
-#convert-btn {
-  margin-top: 0.5rem;
+#gene-name {
+  width: 4vw;
 }
 
 label[for="gene-name"] {
   margin-left: 0.5rem;
-}
-
-#gene-name {
-  width: 4vw;
 }
 
 .exon:nth-child(even) {
@@ -68,15 +86,11 @@ mark {
   background: var(--reverse-mark-color);
 }
 
-#primer-form {
-  width: 30vw;
-  height: 85vh;
-}
+/* PRIMER PAIR SECTION */
 
 #primer-pair-list {
-  overflow: hidden auto;
-  height: 100%;
-  margin-top: 1rem;
+  padding-left: 0;
+  list-style-type: none;
 }
 
 .primer-pair {
@@ -89,16 +103,16 @@ mark {
   border-left: 3px solid red;
 }
 
-.primer-pair-bottom {
-  margin-top: 0.5rem;
-}
-
 .remove-primer-pair-btn {
   visibility: hidden;
   margin-left: 0.2rem;
   padding: 0;
   background: inherit;
   border: 0;
+}
+
+#add-primer-pair-btn {
+  align-self: flex-start;
 }
 
 #primer-pair-list.remove-btn-shown .remove-primer-pair-btn {
@@ -126,17 +140,13 @@ mark {
   box-shadow: 0 0 4px var(--reverse-mark-color);
 }
 
-.primer-pair-controls {
-  display: inline-block;
-}
-
-.primer-pair-controls button {
+.primer-pair .footer button {
   width: 1.2rem;
   height: 1.2rem;
   padding: 0;
 }
 
-.primer-pair-controls button img {
+.primer-pair .footer button img {
   width: 100%;
   height: 100%;
 }

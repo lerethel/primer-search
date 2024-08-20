@@ -9,38 +9,39 @@
 </head>
 
 <body>
-	<div id="seq-form">
-		<div class="form-header">FASTA gene sequence</div>
-		<div id="seq" contenteditable="true"></div>
-		<button type="button" id="convert-btn">Join and mark exons</button>
-		<input type="checkbox" id="convert-on-paste" checked>
-		<label for="convert-on-paste">Join and mark on copy</label>
-		<label for="gene-name">Gene name:</label>
-		<input type="text" id="gene-name" autocomplete="off">
-	</div>
-	<div id="primer-form">
-		<div class="form-header">Primers</div>
-		<button type="button" id="add-primer-pair-btn">Add pair</button>
-		<div id="primer-pair-list">
-			<template id="primer-pair-template">
-				<div class="primer-pair">
-					<label>F: <input type="text" class="primer"></label>
-					<label>R: <input type="text" class="primer"></label>
-					<button type="button" class="remove-primer-pair-btn" title="Remove primer pair">×</button>
-					<div class="primer-pair-bottom">
-						<div class="primer-pair-controls">
+	<main>
+		<div class="form">
+			<div class="form-header">FASTA gene sequence</div>
+			<div id="seq" class="data" contenteditable="true"></div>
+			<div class="footer">
+				<button type="button" id="convert-btn">Join and mark exons</button>
+				<input type="checkbox" id="convert-on-paste" checked>
+				<label for="convert-on-paste">Join and mark on copy</label>
+				<label for="gene-name">Gene name:</label>
+				<input type="text" id="gene-name" autocomplete="off">
+			</div>
+		</div>
+		<div class="form">
+			<div class="form-header">Primers</div>
+			<button type="button" id="add-primer-pair-btn">Add pair</button>
+			<ul id="primer-pair-list" class="data">
+				<template id="primer-pair-template">
+					<li class="primer-pair">
+						<label>F: <input type="text" class="primer"></label>
+						<label>R: <input type="text" class="primer"></label>
+						<button type="button" class="remove-primer-pair-btn" title="Remove primer pair">×</button>
+						<div class="footer">
 							<button type="button" title="Mark primer pair in gene sequence"
 								class="mark-primer-pair-btn"><img src="res/icons/star.svg"></button>
 							<button type="button" title="Copy primer pair info"
 								class="copy-pair-info-btn"><img src="res/icons/copy.svg"></button>
+							<span class="product-length">Product length: {pl}</span>
 						</div>
-						<span class="product-length">Product length: {pl}</span>
-					</div>
-				</div>
-			</template>
+					</li>
+				</template>
+			</ul>
 		</div>
-	</div>
-
+	</main>
 </body>
 
 </html>
