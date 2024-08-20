@@ -10,8 +10,8 @@
 
 <body>
 	<main>
-		<div class="form">
-			<div class="form-header">FASTA gene sequence</div>
+		<section>
+			<h1>FASTA gene sequence</h1>
 			<div id="seq" class="data" contenteditable="true"></div>
 			<div class="footer">
 				<button type="button" id="convert-btn">Join and mark exons</button>
@@ -20,9 +20,9 @@
 				<label for="gene-name">Gene name:</label>
 				<input type="text" id="gene-name" autocomplete="off">
 			</div>
-		</div>
-		<div class="form">
-			<div class="form-header">Primers</div>
+		</section>
+		<section>
+			<h1>Primers</h1>
 			<button type="button" id="add-primer-pair-btn">Add pair</button>
 			<ul id="primer-pair-list" class="data">
 				<template id="primer-pair-template">
@@ -40,7 +40,7 @@
 					</li>
 				</template>
 			</ul>
-		</div>
+		</section>
 	</main>
 </body>
 

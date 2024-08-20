@@ -10,6 +10,7 @@
 }
 
 body {
+  margin-top: 0;
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
@@ -20,22 +21,23 @@ main {
   column-gap: 5vw;
 }
 
-.form {
+section {
   display: flex;
   flex-direction: column;
   height: 85vh;
 }
 
-.form:first-of-type {
+section:first-of-type {
   flex: 2;
 }
 
-.form:last-of-type {
+section:last-of-type {
   flex: 1;
 }
 
-.form-header {
-  margin-bottom: 0.5rem;
+h1 {
+  margin: 0.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
   text-align: center;
 }
