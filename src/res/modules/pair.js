@@ -12,13 +12,15 @@ function createPrimerPair() {
   return cE.primerPairTemplate.content.cloneNode(true).children[0];
 }
 
+function getPrimerElements(primerPair) {
+  return primerPair.getElementsByClassName(css.primerClass);
+}
+
 export function appendPrimerPair(forward, reverse, productLength) {
   const primerPair = createPrimerPair();
 
   if (forward && reverse) {
-    const [forwardElement, reverseElement] = primerPair.getElementsByClassName(
-      css.primerClass
-    );
+    const [forwardElement, reverseElement] = getPrimerElements(primerPair);
     forwardElement.value = forward;
     reverseElement.value = reverse;
   }
@@ -58,10 +60,12 @@ export function hideRemovePrimerPairBtn() {
   cE.primerPairList.classList.remove(css.removeBtnShownClass);
 }
 
+function getProductLengthElement(primerPair) {
+  return primerPair.getElementsByClassName(css.productLengthClass)[0];
+}
+
 export function showProductLength(primerPair, productLength) {
-  const productLengthElement = primerPair.getElementsByClassName(
-    css.productLengthClass
-  )[0];
+  const productLengthElement = getProductLengthElement(primerPair);
 
   productLengthElement.textContent = productLengthElement.textContent.replace(
     rproductLength,
@@ -72,9 +76,9 @@ export function showProductLength(primerPair, productLength) {
 }
 
 export function hideProductLength(primerPair) {
-  primerPair
-    .getElementsByClassName(css.productLengthClass)[0]
-    .classList.remove(css.shownProductLengthClass);
+  getProductLengthElement(primerPair).classList.remove(
+    css.shownProductLengthClass
+  );
 }
 
 ///////////////////////////////////
@@ -87,9 +91,7 @@ export function handleEvent(event) {
     return;
   }
 
-  const [forwardElement, reverseElement] = primerPair.getElementsByClassName(
-    css.primerClass
-  );
+  const [forwardElement, reverseElement] = getPrimerElements(primerPair);
 
   forwardElement.value = forwardElement.value.trim();
   reverseElement.value = reverseElement.value.trim();
@@ -220,9 +222,7 @@ eventMap.click.push((primer) => {
   }
 
   const geneName = cE.geneName.value.trim();
-  const productLengthElement = primer.pair.getElementsByClassName(
-    css.productLengthClass
-  )[0];
+  const productLengthElement = getProductLengthElement(primer.pair);
   const pairInfoWarning = new fn.WarningQueue();
 
   pairInfoWarning.append(!geneName, not.wNoGeneName);
