@@ -1,47 +1,61 @@
 <!DOCTYPE html>
-<html>
-
-<head>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" href="res/PrimerSearch.css">
-	<script type="module" src="res/PrimerSearch.js"></script>
-	<title>PrimerSearch</title>
-</head>
-
-<body>
-	<main>
-		<section>
-			<h1>FASTA gene sequence</h1>
-			<div id="seq" class="data" contenteditable="true"></div>
-			<div class="footer">
-				<button type="button" id="convert-btn">Join and mark exons</button>
-				<input type="checkbox" id="convert-on-paste" checked>
-				<label for="convert-on-paste">Join and mark on copy</label>
-				<label for="gene-name">Gene name:</label>
-				<input type="text" id="gene-name" autocomplete="off">
-			</div>
-		</section>
-		<section>
-			<h1>Primers</h1>
-			<button type="button" id="add-primer-pair-btn">Add pair</button>
-			<ul id="primer-pair-list" class="data">
-				<template id="primer-pair-template">
-					<li class="primer-pair">
-						<label>F: <input type="text" class="primer"></label>
-						<label>R: <input type="text" class="primer"></label>
-						<button type="button" class="remove-primer-pair-btn" title="Remove primer pair">×</button>
-						<div class="footer">
-							<button type="button" title="Mark primer pair in gene sequence"
-								class="mark-primer-pair-btn"><img src="res/icons/star.svg"></button>
-							<button type="button" title="Copy primer pair info"
-								class="copy-pair-info-btn"><img src="res/icons/copy.svg"></button>
-							<span class="product-length">Product length: {pl}</span>
-						</div>
-					</li>
-				</template>
-			</ul>
-		</section>
-	</main>
-</body>
-
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="res/PrimerSearch.css" />
+    <script type="module" src="res/PrimerSearch.js"></script>
+    <title>PrimerSearch</title>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>FASTA gene sequence</h1>
+        <div id="seq" class="data" contenteditable="true"></div>
+        <div class="footer">
+          <button type="button" id="convert-btn">Join and mark exons</button>
+          <input type="checkbox" id="convert-on-paste" checked />
+          <label for="convert-on-paste">Join and mark on copy</label>
+          <label for="gene-name">Gene name:</label>
+          <input type="text" id="gene-name" autocomplete="off" />
+        </div>
+      </section>
+      <section>
+        <h1>Primers</h1>
+        <button type="button" id="add-primer-pair-btn">Add pair</button>
+        <ul id="primer-pair-list" class="data">
+          <template id="primer-pair-template">
+            <li class="primer-pair">
+              <label>F: <input type="text" class="primer" /></label>
+              <label>R: <input type="text" class="primer" /></label>
+              <button
+                type="button"
+                class="remove-primer-pair-btn"
+                title="Remove primer pair"
+              >
+                ×
+              </button>
+              <div class="footer">
+                <button
+                  type="button"
+                  title="Mark primer pair in gene sequence"
+                  class="mark-primer-pair-btn"
+                >
+                  <img src="res/icons/star.svg" />
+                </button>
+                <button
+                  type="button"
+                  title="Copy primer pair info"
+                  class="copy-pair-info-btn"
+                >
+                  <img src="res/icons/copy.svg" />
+                </button>
+                <span class="product-length">Product length: {pl}</span>
+              </div>
+            </li>
+          </template>
+        </ul>
+      </section>
+    </main>
+  </body>
 </html>
