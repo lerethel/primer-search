@@ -3,6 +3,7 @@ import Toastify from "https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/+esm";
 
 import * as cE from "./const-elem.js";
 import * as css from "./css-attr.js";
+import * as not from "./notification.js";
 
 ////////////
 /// MARK ///
@@ -98,6 +99,41 @@ export class WarningQueue {
 
 /////////////
 /// OTHER ///
+
+const rexonHeader = /^\s*>.+?$/gm;
+const rwhitespace = /\s+/g;
+
+export function joinExons(fastaSeq) {
+  fastaSeq = fastaSeq.trim();
+
+  if (!fastaSeq) {
+    return;
+  }
+
+  if (!rexonHeader.test(fastaSeq)) {
+    info(not.iExonsNotSeparated);
+    cE.seq.textContent = fastaSeq;
+    return;
+  }
+
+  const fragment = new DocumentFragment();
+
+  fastaSeq.split(rexonHeader).forEach((exon) => {
+    exon = exon.replace(rwhitespace, "");
+
+    if (!exon) {
+      return;
+    }
+
+    const exonElement = document.createElement("span");
+
+    exonElement.classList.add(css.exonClass);
+    exonElement.textContent = exon;
+    fragment.append(exonElement);
+  });
+
+  cE.seq.replaceChildren(fragment);
+}
 
 const racidBases = /[ATGC]/g;
 const compementaryPairs = {
