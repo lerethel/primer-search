@@ -6,7 +6,6 @@ import * as not from "./notification.js";
 /////////////////////////////////////
 /// METHODS FOR OPERATING THE DOM ///
 
-let primerPairNumber = 0;
 const rproductLength = /\{pl\}|\d+/;
 
 function createPrimerPair() {
@@ -29,32 +28,25 @@ export function appendPrimerPair(forward, reverse, productLength) {
   }
 
   cE.primerPairList.append(primerPair);
-  primerPairNumber++;
 
-  if (primerPairNumber > 1) {
+  if (cE.primerPairList.childElementCount > 1) {
     showRemovePrimerPairBtn();
   }
 }
 
-export function removePrimerPair(primerPair, keepLast) {
+export function removePrimerPair(primerPair, keepLast = false) {
   primerPair.remove();
-  primerPairNumber--;
   fn.unmark({ pair: primerPair });
 
-  if (keepLast && !primerPairNumber) {
+  if (keepLast && !cE.primerPairList.childElementCount) {
     appendPrimerPair();
     hideRemovePrimerPairBtn();
   }
 }
 
-export function removeAllPrimerPairs(keepLast) {
-  const primerPairs = cE.primerPairList.getElementsByClassName(
-    css.primerPairClass
-  );
-  let i = primerPairs.length;
-
-  while (i--) {
-    removePrimerPair(primerPairs[i], keepLast);
+export function removeAllPrimerPairs() {
+  while (cE.primerPairList.childElementCount) {
+    removePrimerPair(cE.primerPairList.lastElementChild);
   }
 }
 
