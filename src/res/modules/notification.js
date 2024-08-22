@@ -41,3 +41,9 @@ export const wNoProductLength =
   "Make sure both primers are correct and can be found in sequence.";
 
 export const wNoGeneName = "Gene name is not specified.";
+
+export const tRemovePrimerPair = "Remove primer pair";
+
+export const tMarkPrimerPair = "Mark primer pair in gene sequence";
+
+export const tCopyPairInfo = "Copy primer pair info";

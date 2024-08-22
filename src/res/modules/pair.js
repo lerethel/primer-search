@@ -9,7 +9,18 @@ import * as not from "./notification.js";
 const rproductLength = /\{pl\}|\d+/;
 
 function createPrimerPair() {
-  return cE.primerPairTemplate.content.cloneNode(true).children[0];
+  const primerPair = cE.primerPairTemplate.content.cloneNode(true).children[0];
+
+  primerPair.getElementsByClassName(css.removePrimerPairBtnClass)[0].title =
+    not.tRemovePrimerPair;
+
+  primerPair.getElementsByClassName(css.markPrimerPairBtnClass)[0].title =
+    not.tMarkPrimerPair;
+
+  primerPair.getElementsByClassName(css.copyPairInfoBtnClass)[0].title =
+    not.tCopyPairInfo;
+
+  return primerPair;
 }
 
 function getPrimerElements(primerPair) {
