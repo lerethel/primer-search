@@ -1,3 +1,6 @@
+////////////
+/// INFO ///
+
 export const iSequenceAlreadyConverted = "Sequence is already converted.";
 
 export const iExonsNotSeparated =
@@ -11,6 +14,9 @@ export const iCopiedListEmpty =
   "Copied list of primers is empty. If a max product " +
   "length was specified, then there are no primers " +
   "with a product length shorter than the one specified.";
+
+////////////////
+/// WARNINGS ///
 
 export const wForwardPrimerNotFound =
   "Forward primer has not been found in sequence. " +
@@ -41,6 +47,9 @@ export const wNoProductLength =
   "Make sure both primers are correct and can be found in sequence.";
 
 export const wNoGeneName = "Gene name is not specified.";
+
+/////////////////////
+/// BUTTON TITLES ///
 
 export const tRemovePrimerPair = "Remove primer pair";
 

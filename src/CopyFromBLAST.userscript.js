@@ -6,60 +6,71 @@
 // ==/UserScript==
 
 (function () {
-	"use strict";
+  "use strict";
 
-	const primerSearchButton = document.createElement("button");
-	primerSearchButton.type = "button";
-	primerSearchButton.textContent = "Copy for PrimerSearch";
-	primerSearchButton.style.display = "inline";
+  const primerSearchButton = document.createElement("button");
+  primerSearchButton.type = "button";
+  primerSearchButton.textContent = "Copy for PrimerSearch";
+  primerSearchButton.style.display = "inline";
 
-	const maxProductLengthField = document.createElement("input");
-	maxProductLengthField.type = "input";
-	maxProductLengthField.style.display = "inline";
-	maxProductLengthField.style.marginLeft = "10px";
-	maxProductLengthField.style.width = "30px";
-	maxProductLengthField.style.textAlign = "center";
+  const maxProductLengthField = document.createElement("input");
+  maxProductLengthField.type = "input";
+  maxProductLengthField.style.display = "inline";
+  maxProductLengthField.style.marginLeft = "10px";
+  maxProductLengthField.style.width = "30px";
+  maxProductLengthField.style.textAlign = "center";
 
-	const maxProductLengthFieldLabel = document.createElement("label");
-	maxProductLengthFieldLabel.textContent = "Max product length";
-	maxProductLengthFieldLabel.style.display = "inline";
-	maxProductLengthFieldLabel.style.marginLeft = "10px";
-	maxProductLengthFieldLabel.append(maxProductLengthField);
+  const maxProductLengthFieldLabel = document.createElement("label");
+  maxProductLengthFieldLabel.textContent = "Max product length";
+  maxProductLengthFieldLabel.style.display = "inline";
+  maxProductLengthFieldLabel.style.marginLeft = "10px";
+  maxProductLengthFieldLabel.append(maxProductLengthField);
 
-	primerSearchButton.addEventListener("click", () => {
-		const treeWalker = document.createTreeWalker(document.getElementById("alignments"), NodeFilter.SHOW_ELEMENT);
-		const primerInfo = [];
-		let currentPrimerPairInfo = [];
+  primerSearchButton.addEventListener(
+    "click",
+    () => {
+      const treeWalker = document.createTreeWalker(
+        document.getElementById("alignments"),
+        NodeFilter.SHOW_ELEMENT
+      );
+      const maxProductLength = parseInt(maxProductLengthField.value);
+      const primerInfo = [];
 
-		while (treeWalker.nextNode()) {
-			const currentElement = treeWalker.currentNode;
-			const currentText = currentElement.textContent.toLowerCase();
+      let curPrimerPairInfo = [];
 
-			if (currentText === "forward primer" || currentText === "reverse primer") {
-				currentPrimerPairInfo.push(currentElement.nextElementSibling.textContent);
-			} else if (currentText === "product length") {
-				currentPrimerPairInfo.push(parseInt(currentElement.nextElementSibling.textContent));
+      while (treeWalker.nextNode()) {
+        const curElement = treeWalker.currentNode;
+        const curText = curElement.textContent.toLowerCase();
 
-				const maxProductLengthParsed = (maxProductLengthField.value) ? parseInt(maxProductLengthField.value) : 0;
+        if (curText === "forward primer" || curText === "reverse primer") {
+          curPrimerPairInfo.push(curElement.nextElementSibling.textContent);
+        } else if (curText === "product length") {
+          curPrimerPairInfo.push(
+            parseInt(curElement.nextElementSibling.textContent)
+          );
 
-				if (!maxProductLengthParsed || currentPrimerPairInfo[2] <= maxProductLengthParsed) {
-					primerInfo.push({
-						forward: currentPrimerPairInfo[0],
-						reverse: currentPrimerPairInfo[1],
-						length: currentPrimerPairInfo[2]
-					});
-				}
+          if (!maxProductLength || curPrimerPairInfo[2] <= maxProductLength) {
+            primerInfo.push({
+              forward: curPrimerPairInfo[0],
+              reverse: curPrimerPairInfo[1],
+              length: curPrimerPairInfo[2],
+            });
+          }
 
-				currentPrimerPairInfo = [];
-			}
-		}
+          curPrimerPairInfo = [];
+        }
+      }
 
-		navigator.clipboard.writeText("<Copied for PrimerSearch>" + JSON.stringify(primerInfo));
-	}, false);
+      navigator.clipboard.writeText(
+        "<Copied for PrimerSearch>" + JSON.stringify(primerInfo)
+      );
+    },
+    false
+  );
 
-	const container = document.createElement("div");
-	container.append(primerSearchButton, maxProductLengthFieldLabel);
+  const container = document.createElement("div");
+  container.append(primerSearchButton, maxProductLengthFieldLabel);
 
-	const alignInfo = document.getElementById("alignInfo");
-	alignInfo.insertBefore(container, alignInfo.firstChild);
-}());
+  const alignInfo = document.getElementById("alignInfo");
+  alignInfo.insertBefore(container, alignInfo.firstChild);
+})();

@@ -49,25 +49,25 @@ export function unmark(primer) {
 ////////////////
 /// TOASTIFY ///
 
-const defaultToastOptions = {
+const toastDefaults = {
   gravity: "bottom",
   position: "right",
   duration: 10000,
 };
 
-function toastMessage(extraOptions) {
-  Toastify({ ...extraOptions, ...defaultToastOptions }).showToast();
+function showToast(extraOptions) {
+  Toastify({ ...extraOptions, ...toastDefaults }).showToast();
 }
 
 export function info(text) {
-  toastMessage({
-    text: text,
+  showToast({
+    text,
   });
 }
 
 export function warning(text) {
-  toastMessage({
-    text: text,
+  showToast({
+    text,
     style: {
       background:
         "linear-gradient(to right, rgb(255, 95, 109), rgb(255, 150, 113))",
@@ -76,18 +76,20 @@ export function warning(text) {
 }
 
 export class WarningQueue {
-  passed = true;
   #queue = [];
+
+  get success() {
+    return !this.#queue.length;
+  }
 
   append(condition, message) {
     if (condition) {
       this.#queue.push(message);
-      this.passed = false;
     }
   }
 
-  run(fn) {
-    this.passed ? fn() : this.#show();
+  run(onSuccess) {
+    this.success ? onSuccess() : this.#show();
   }
 
   #show() {
@@ -135,8 +137,8 @@ export function joinExons(fastaSeq) {
   cE.seq.replaceChildren(fragment);
 }
 
-const racidBases = /[ATGC]/g;
-const compementaryPairs = {
+const rnucleobases = /[ATGC]/g;
+const basePairs = {
   A: "T",
   G: "C",
   T: "A",
@@ -148,5 +150,5 @@ export function reverseComplement(primerSeq) {
     .split("")
     .reverse()
     .join("")
-    .replace(racidBases, (base) => compementaryPairs[base]);
+    .replace(rnucleobases, (base) => basePairs[base]);
 }

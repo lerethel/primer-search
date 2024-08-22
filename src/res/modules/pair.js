@@ -187,7 +187,7 @@ eventMap.click.push((primer) => {
   primerWarning.append(forwardIndex < 0, not.wForwardPrimerNotFound);
   primerWarning.append(reverseIndex < 0, not.wReversePrimerNotFound);
 
-  if (primerWarning.passed) {
+  if (primerWarning.success) {
     // Check that the reverse primer follows the forward primer.
     primerWarning.append(
       forwardIndex > reverseIndex,
@@ -251,8 +251,8 @@ eventMap.click.push((primer) => {
   });
 });
 
+// Remove a primer pair.
 eventMap.click.push((primer, event) => {
-  // Remove a primer pair when the corresponding button is clicked.
   if (event.target.classList.contains(css.removePrimerPairBtnClass)) {
     removePrimerPair(primer.pair, true);
   }
