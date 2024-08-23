@@ -8,69 +8,71 @@
 (function () {
   "use strict";
 
-  const primerSearchButton = document.createElement("button");
-  primerSearchButton.type = "button";
-  primerSearchButton.textContent = "Copy for PrimerSearch";
-  primerSearchButton.style.display = "inline";
+  const container = document.createElement("div");
 
-  const maxProductLengthField = document.createElement("input");
-  maxProductLengthField.type = "input";
-  maxProductLengthField.style.display = "inline";
-  maxProductLengthField.style.marginLeft = "10px";
-  maxProductLengthField.style.width = "30px";
-  maxProductLengthField.style.textAlign = "center";
+  container.innerHTML =
+    '<button type="button" style="width: 18rem;">Copy for PrimerSearch' +
+    '</button><label style="display: inline; margin-left: 1rem;">' +
+    'Max product length<input type="input" style="display: inline;' +
+    'margin-left: 1rem; width: 4rem; text-align: center;"></label>';
 
-  const maxProductLengthFieldLabel = document.createElement("label");
-  maxProductLengthFieldLabel.textContent = "Max product length";
-  maxProductLengthFieldLabel.style.display = "inline";
-  maxProductLengthFieldLabel.style.marginLeft = "10px";
-  maxProductLengthFieldLabel.append(maxProductLengthField);
+  const primerSearchButton = container.getElementsByTagName("button")[0];
+  const maxProductLengthElement = container.getElementsByTagName("input")[0];
+  const originalButtonText = primerSearchButton.textContent;
+  const rprimerField = /^(?:(?:forward|reverse) primer|product length)$/i;
+
+  let buttonTimer;
 
   primerSearchButton.addEventListener(
     "click",
-    () => {
+    (event) => {
+      clearTimeout(buttonTimer);
+
       const treeWalker = document.createTreeWalker(
         document.getElementById("alignments"),
-        NodeFilter.SHOW_ELEMENT
+        NodeFilter.SHOW_ELEMENT,
+        (node) =>
+          node.tagName === "TH" && rprimerField.test(node.textContent)
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_SKIP
       );
-      const maxProductLength = parseInt(maxProductLengthField.value);
+
+      const getNextProperty = () =>
+        treeWalker.nextNode()?.nextElementSibling.textContent;
+      const maxProductLength = parseInt(maxProductLengthElement.value);
       const primerInfo = [];
 
-      let curPrimerPairInfo = [];
+      let forward, reverse, length;
 
-      while (treeWalker.nextNode()) {
-        const curElement = treeWalker.currentNode;
-        const curText = curElement.textContent.toLowerCase();
-
-        if (curText === "forward primer" || curText === "reverse primer") {
-          curPrimerPairInfo.push(curElement.nextElementSibling.textContent);
-        } else if (curText === "product length") {
-          curPrimerPairInfo.push(
-            parseInt(curElement.nextElementSibling.textContent)
-          );
-
-          if (!maxProductLength || curPrimerPairInfo[2] <= maxProductLength) {
-            primerInfo.push({
-              forward: curPrimerPairInfo[0],
-              reverse: curPrimerPairInfo[1],
-              length: curPrimerPairInfo[2],
-            });
-          }
-
-          curPrimerPairInfo = [];
+      while (
+        (forward = getNextProperty()) &&
+        (reverse = getNextProperty()) &&
+        (length = getNextProperty())
+      ) {
+        if (!maxProductLength || length <= maxProductLength) {
+          primerInfo.push({
+            forward,
+            reverse,
+            length: parseInt(length),
+          });
         }
       }
 
       navigator.clipboard.writeText(
         "<Copied for PrimerSearch>" + JSON.stringify(primerInfo)
       );
+
+      const { target } = event;
+
+      target.textContent = primerInfo.length
+        ? "Primers copied"
+        : "No primers found";
+      buttonTimer = setTimeout(() => {
+        target.textContent = originalButtonText;
+      }, 3000);
     },
     false
   );
 
-  const container = document.createElement("div");
-  container.append(primerSearchButton, maxProductLengthFieldLabel);
-
-  const alignInfo = document.getElementById("alignInfo");
-  alignInfo.insertBefore(container, alignInfo.firstChild);
+  document.getElementById("alignInfo").prepend(container);
 })();
