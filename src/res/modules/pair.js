@@ -175,8 +175,9 @@ eventMap.click.push((primer) => {
   const seqText = cE.seq.textContent;
   const forwardValue = primer.forward.value;
   const reverseValue = primer.reverse.value;
+  const reversedReverseValue = fn.reverseComplement(reverseValue);
   const forwardIndex = seqText.indexOf(forwardValue);
-  const reverseIndex = seqText.indexOf(fn.reverseComplement(reverseValue));
+  const reverseIndex = seqText.indexOf(reversedReverseValue);
 
   // Unmark everything now in case of errors.
   fn.unmark();
@@ -206,7 +207,10 @@ eventMap.click.push((primer) => {
       not.wForwardOccursMoreThanOnce
     );
     primerWarning.append(
-      seqText.includes(reverseValue, reverseIndex + reverseValue.length),
+      seqText.includes(
+        reversedReverseValue,
+        reverseIndex + reverseValue.length
+      ),
       not.wReverseOccursMoreThanOnce
     );
   }
