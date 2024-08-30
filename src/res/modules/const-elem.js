@@ -10,3 +10,11 @@ export const primerPairList = document.getElementById(css.primerPairListId);
 export const primerPairTemplate = document.getElementById(
   css.primerPairTemplateId
 );
+
+export const species = document.getElementById(css.speciesId);
+export const speciesList = document.getElementById(css.speciesListId);
+
+export const findSeqBtn = document.getElementById(css.findSeqBtnId);
+export const findPrimersBtn = document.getElementById(css.findPrimersBtnId);
+export const mustSpanJunction = document.getElementById(css.mustSpanJunctionId);
+export const maxProductLength = document.getElementById(css.maxProductLengthId);

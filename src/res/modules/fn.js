@@ -52,7 +52,8 @@ export function unmark(primer) {
 const toastDefaults = {
   gravity: "bottom",
   position: "right",
-  duration: 10000,
+  duration: 15000,
+  close: true,
 };
 
 function showToast(extraOptions) {
@@ -95,6 +96,39 @@ export class WarningQueue {
   #show() {
     for (const message of this.#queue) {
       warning(message);
+    }
+  }
+}
+
+//////////////
+/// SERVER ///
+
+export class SingletonRequest {
+  #controller;
+
+  constructor(url) {
+    this.url = url;
+  }
+
+  async send(params, options) {
+    if (this.#controller) {
+      this.#controller.abort();
+    }
+
+    this.#controller = new AbortController();
+
+    try {
+      const query = params ? new URLSearchParams(params).toString() : "";
+      return await fetch(this.url + (query ? `?${query}` : ""), {
+        ...options,
+        signal: this.#controller.signal,
+      });
+    } catch (e) {
+      if (!(e instanceof DOMException) && e.name !== "AbortError") {
+        throw e;
+      }
+    } finally {
+      this.#controller = undefined;
     }
   }
 }
@@ -151,4 +185,8 @@ export function reverseComplement(primerSeq) {
     .reverse()
     .join("")
     .replace(rnucleobases, (base) => basePairs[base]);
+}
+
+export function capitalize(text) {
+  return text ? text[0].toUpperCase() + text.slice(1) : "";
 }

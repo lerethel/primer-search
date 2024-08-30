@@ -3,6 +3,7 @@ import * as css from "./modules/css-attr.js";
 import * as fn from "./modules/fn.js";
 import * as not from "./modules/notification.js";
 import * as pair from "./modules/pair.js";
+import * as remote from "./modules/remote.js";
 
 ////////////////
 /// SEQUENCE ///
@@ -44,3 +45,10 @@ cE.addPrimerPairBtn.addEventListener("click", pair.appendPrimerPair, false);
 for (const eventType of ["paste", "click", "keyup"]) {
   cE.primerPairList.addEventListener(eventType, pair.handleEvent, false);
 }
+
+//////////////
+/// REMOTE ///
+
+cE.species.addEventListener("input", remote.findTaxons, false);
+cE.findSeqBtn.addEventListener("click", remote.findSeq, false);
+cE.findPrimersBtn.addEventListener("click", remote.findPrimers, false);

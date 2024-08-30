@@ -63,6 +63,13 @@ export function removeAllPrimerPairs() {
   }
 }
 
+export function populateFromJSON(json) {
+  removeAllPrimerPairs();
+  json.forEach((jsonPair) => {
+    appendPrimerPair(jsonPair.forward, jsonPair.reverse, jsonPair.length);
+  });
+}
+
 export function showRemovePrimerPairBtn() {
   cE.primerPairList.classList.add(css.removeBtnShownClass);
 }
@@ -139,14 +146,9 @@ eventMap.paste.push((primer, event) => {
       clipboardText.replace("<Copied for PrimerSearch>", "")
     );
 
-    if (parsedJSON.length) {
-      removeAllPrimerPairs();
-      parsedJSON.forEach((jsonPair) => {
-        appendPrimerPair(jsonPair.forward, jsonPair.reverse, jsonPair.length);
-      });
-    } else {
-      fn.info(not.iCopiedListEmpty);
-    }
+    parsedJSON.length
+      ? populateFromJSON(parsedJSON)
+      : fn.info(not.iCopiedListEmpty);
   } else {
     event.target.value = clipboardText;
 

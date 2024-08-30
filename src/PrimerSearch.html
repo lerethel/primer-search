@@ -3,27 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="res/PrimerSearch.css" />
-    <script type="module" src="res/PrimerSearch.js"></script>
+    <link rel="stylesheet" href="PrimerSearch.css" />
+    <script type="module" src="PrimerSearch.js"></script>
     <title>PrimerSearch</title>
   </head>
   <body>
     <main>
-      <section>
+      <section class="v-flex">
         <h1>FASTA gene sequence</h1>
         <div id="seq" class="data" contenteditable="true"></div>
         <div class="footer">
           <button type="button" id="convert-btn">Join and mark exons</button>
-          <input type="checkbox" id="convert-on-paste" checked />
-          <label for="convert-on-paste">Join and mark on copy</label>
-          <label for="gene-name">Gene name:</label>
-          <input type="text" id="gene-name" autocomplete="off" />
+          <label>
+            <input type="checkbox" id="convert-on-paste" checked />
+            Join and mark on copy
+          </label>
         </div>
       </section>
-      <section>
-        <h1>Primers</h1>
-        <button type="button" id="add-primer-pair-btn">Add pair</button>
-        <ul id="primer-pair-list" class="data"></ul>
+      <section class="v-flex">
+        <div>
+          <h1>Configuration</h1>
+          <label>Gene name: <input type="text" id="gene-name" /></label>
+          <label>
+            Species: <input type="text" list="species-list" id="species" />
+          </label>
+          <datalist id="species-list"></datalist>
+          <div class="footer v-flex">
+            <button id="find-seq-btn">Find sequence on Ensembl</button>
+            <button id="find-primers-btn">Find primers on Primer-BLAST</button>
+            <label>
+              <input type="checkbox" id="must-span-junction" />
+              Primer must span an exon-exon junction
+            </label>
+            <label>
+              Max product length:
+              <input type="text" id="max-product-length" value="500" />
+            </label>
+          </div>
+        </div>
+        <div class="v-flex">
+          <h1>Primers</h1>
+          <button type="button" id="add-primer-pair-btn">Add pair</button>
+          <ul id="primer-pair-list" class="data"></ul>
+        </div>
       </section>
     </main>
     <template id="primer-pair-template">
@@ -33,10 +55,10 @@
         <button type="button" class="remove-primer-pair-btn">×</button>
         <div class="footer">
           <button type="button" class="mark-primer-pair-btn">
-            <img src="res/icons/star.svg" />
+            <img src="icons/star.svg" />
           </button>
           <button type="button" class="copy-pair-info-btn">
-            <img src="res/icons/copy.svg" />
+            <img src="icons/copy.svg" />
           </button>
           <span class="product-length">Product length: {pl}</span>
         </div>

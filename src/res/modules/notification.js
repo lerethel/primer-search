@@ -15,6 +15,14 @@ export const iCopiedListEmpty =
   "length was specified, then there are no primers " +
   "with a product length shorter than the one specified.";
 
+export const iSearchingForSequence = "Searching for sequence...";
+
+export const iRequestBeingProcessed = "Request is being processed...";
+
+export const iSequenceDownloaded = "Sequence has been downloaded.";
+
+export const iPrimersDownloaded = "Primers have been downloaded.";
+
 ////////////////
 /// WARNINGS ///
 
@@ -47,6 +55,12 @@ export const wNoProductLength =
   "Make sure both primers are correct and can be found in sequence.";
 
 export const wNoGeneName = "Gene name is not specified.";
+
+export const wSequenceNotFound = "Sequence has not been found on Ensembl.";
+
+export const wSpeciesNotSpecified = "Species is not specified.";
+
+export const wNoSequence = "Sequence is not specified.";
 
 /////////////////////
 /// BUTTON TITLES ///

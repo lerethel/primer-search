@@ -1,0 +1,18 @@
+export default {
+  compression: "uncompressed",
+  data_type: "Transcript",
+  data_action: "",
+  component: "ExonsSpreadsheet",
+  cdb: "",
+  export_action: "ExonSeq",
+  filtered_sets: "all",
+  adorn: "both",
+  g: "",
+  t: "",
+  db: "core",
+  r: "",
+  name: "",
+  format: "FASTA",
+  extra_FASTA: "exon",
+  flanking_FASTA: "50",
+};
