@@ -5,7 +5,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export function getIndex(req, res) {
-  res.sendFile(path.join(__dirname, "..", "..", "PrimerSearch.html"));
+  res.sendFile(path.join(__dirname, "..", "..", "client", "index.html"));
 }
 
 export function getNotFound(req, res) {

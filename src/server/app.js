@@ -17,7 +17,7 @@ const serverReadyMessage =
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "..", "res")));
+app.use(express.static(path.join(__dirname, "..", "client", "public")));
 app.use(express.json());
 app.use("/", blastRouter);
 app.use("/", ensemblRouter);
