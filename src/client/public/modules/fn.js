@@ -124,7 +124,7 @@ export class SingletonRequest {
         signal: this.#controller.signal,
       });
     } catch (e) {
-      if (!(e instanceof DOMException) && e.name !== "AbortError") {
+      if (e.name !== "AbortError") {
         throw e;
       }
     } finally {
