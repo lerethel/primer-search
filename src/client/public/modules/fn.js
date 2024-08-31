@@ -56,47 +56,25 @@ const toastDefaults = {
   close: true,
 };
 
-function showToast(extraOptions) {
-  Toastify({ ...extraOptions, ...toastDefaults }).showToast();
+function showToast(options, condition = true) {
+  if (condition) {
+    Toastify({ ...options, ...toastDefaults }).showToast();
+  }
 }
 
-export function info(text) {
-  showToast({
-    text,
-  });
+export function info(text, condition) {
+  showToast({ text }, condition);
 }
 
-export function warning(text) {
-  showToast({
-    text,
-    style: {
-      background:
-        "linear-gradient(to right, rgb(255, 95, 109), rgb(255, 150, 113))",
-    },
-  });
+export function success(text, condition) {
+  showToast({ text, className: "success-toast" }, condition);
 }
 
-export class WarningQueue {
-  #queue = [];
-
-  get success() {
-    return !this.#queue.length;
-  }
-
-  append(condition, message) {
-    if (condition) {
-      this.#queue.push(message);
-    }
-  }
-
-  run(onSuccess) {
-    this.success ? onSuccess() : this.#show();
-  }
-
-  #show() {
-    for (const message of this.#queue) {
-      warning(message);
-    }
+export function error(text, condition = true, callback) {
+  showToast({ text, className: "error-toast" }, condition);
+  callback && callback();
+  if (condition) {
+    throw new Error(text);
   }
 }
 

@@ -11,12 +11,9 @@ import * as remote from "./modules/remote.js";
 cE.convertBtn.addEventListener(
   "click",
   () => {
-    if (cE.seq.getElementsByClassName(css.exonClass).length) {
-      fn.info(not.iSequenceAlreadyConverted);
-      return;
-    }
-
-    fn.joinExons(cE.seq.innerText);
+    cE.seq.getElementsByClassName(css.exonClass).length
+      ? fn.info(not.iSequenceAlreadyConverted)
+      : fn.joinExons(cE.seq.innerText);
   },
   false
 );

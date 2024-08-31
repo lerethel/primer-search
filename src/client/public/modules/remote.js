@@ -50,26 +50,20 @@ export async function findSeq() {
   const species = cE.species.value.replace(rtaxid, "").trim();
   const gene = cE.geneName.value.trim();
 
-  const seqWarning = new fn.WarningQueue();
-  seqWarning.append(!species, not.wSpeciesNotSpecified);
-  seqWarning.append(!gene, not.wNoGeneName);
+  fn.error(not.eSpeciesNotSpecified, !species);
+  fn.error(not.eNoGeneName, !gene);
 
-  seqWarning.run(async () => {
-    fn.info(not.iSearchingForSequence);
-    const response = await seqRequest.send({ species, gene });
+  fn.info(not.iSearchingForSequence);
+  const response = await seqRequest.send({ species, gene });
 
-    if (!response) {
-      return;
-    }
+  if (!response) {
+    return;
+  }
 
-    if (!response.ok) {
-      fn.warning(not.wSequenceNotFound);
-      return;
-    }
+  fn.error(not.eSequenceNotFound, !response.ok);
 
-    fn.joinExons((await response.json()).sequence);
-    fn.info(not.iSequenceDownloaded);
-  });
+  fn.joinExons((await response.json()).sequence);
+  fn.success(not.sSequenceDownloaded);
 }
 
 const primerRequest = new fn.SingletonRequest("/blast/search");
@@ -82,62 +76,55 @@ export async function findPrimers() {
   const onSpliceSite = cE.mustSpanJunction.checked ? 1 : 0;
   const maxProductLength = cE.maxProductLength.value;
 
-  const seqWarning = new fn.WarningQueue();
-  seqWarning.append(!species, not.wSpeciesNotSpecified);
-  seqWarning.append(!sequence, not.wNoSequence);
+  fn.error(not.eSpeciesNotSpecified, !species);
+  fn.error(not.eNoSequence, !sequence);
 
-  seqWarning.run(async () => {
-    clearInterval(primerInterval);
-    fn.info(not.iRequestBeingProcessed);
+  clearInterval(primerInterval);
+  fn.info(not.iRequestBeingProcessed);
 
-    const initResponse = await primerRequest.send(null, {
-      method: "POST",
-      body: JSON.stringify({
-        species,
-        sequence,
-        onSpliceSite,
-        maxProductLength,
-      }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (!initResponse) {
-      return;
-    }
-
-    const initJSON = await initResponse.json();
-
-    if (!initResponse.ok) {
-      fn.warning(initJSON.message);
-      return;
-    }
-
-    primerInterval = setInterval(async () => {
-      const primerResponse = await primerRequest.send(
-        { job_key: initJSON.job_key },
-        { cache: "no-store" }
-      );
-
-      if (!primerResponse) {
-        clearInterval(primerInterval);
-        return;
-      }
-
-      const primerJSON = await primerResponse.json();
-
-      if (primerJSON.message) {
-        if (primerResponse.ok) {
-          fn.info(primerJSON.message);
-        } else {
-          fn.warning(primerJSON.message);
-          clearInterval(primerInterval);
-        }
-        return;
-      }
-
-      clearInterval(primerInterval);
-      pair.populateFromJSON(primerJSON);
-      fn.info(not.iPrimersDownloaded);
-    }, 30000);
+  const initResponse = await primerRequest.send(null, {
+    method: "POST",
+    body: JSON.stringify({
+      species,
+      sequence,
+      onSpliceSite,
+      maxProductLength,
+    }),
+    headers: { "Content-Type": "application/json" },
   });
+
+  if (!initResponse) {
+    return;
+  }
+
+  const initJSON = await initResponse.json();
+
+  fn.error(initJSON.message, !initResponse.ok);
+
+  primerInterval = setInterval(async () => {
+    const primerResponse = await primerRequest.send(
+      { job_key: initJSON.job_key },
+      { cache: "no-store" }
+    );
+
+    if (!primerResponse) {
+      clearInterval(primerInterval);
+      return;
+    }
+
+    const primerJSON = await primerResponse.json();
+
+    if (primerJSON.message) {
+      primerResponse.ok
+        ? fn.info(primerJSON.message)
+        : fn.error(primerJSON.message, true, () =>
+            clearInterval(primerInterval)
+          );
+      return;
+    }
+
+    clearInterval(primerInterval);
+    pair.populateFromJSON(primerJSON);
+    fn.success(not.sPrimersDownloaded);
+  }, 30000);
 }

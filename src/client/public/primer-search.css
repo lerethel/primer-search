@@ -177,3 +177,23 @@ mark {
   width: 100%;
   height: 100%;
 }
+
+/* NOTIFICATIONS */
+
+.toast-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.toast-close:hover {
+  opacity: 0.6;
+}
+
+.success-toast {
+  background: linear-gradient(to right, rgb(11 204 200), rgb(7 204 197));
+}
+
+.error-toast {
+  background: linear-gradient(to right, rgb(255 95 109), rgb(255 150 113));
+}

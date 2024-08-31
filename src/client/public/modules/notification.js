@@ -7,60 +7,63 @@ export const iExonsNotSeparated =
   "Exons are not separated. Each exon must " +
   "have a title above it beginning with `>`.";
 
-export const iPrimerPairInfoCopied =
-  "Primer pair info has been copied to clipboard.";
-
-export const iCopiedListEmpty =
-  "Copied list of primers is empty. If a max product " +
-  "length was specified, then there are no primers " +
-  "with a product length shorter than the one specified.";
-
 export const iSearchingForSequence = "Searching for sequence...";
 
 export const iRequestBeingProcessed = "Request is being processed...";
 
-export const iSequenceDownloaded = "Sequence has been downloaded.";
+///////////////
+/// SUCCESS ///
 
-export const iPrimersDownloaded = "Primers have been downloaded.";
+export const sPrimerPairInfoCopied =
+  "Primer pair info has been copied to clipboard.";
 
-////////////////
-/// WARNINGS ///
+export const sSequenceDownloaded = "Sequence has been downloaded.";
 
-export const wForwardPrimerNotFound =
+export const sPrimersDownloaded = "Primers have been downloaded.";
+
+//////////////
+/// ERRORS ///
+
+export const eCopiedListEmpty =
+  "Copied list of primers is empty. If a max product " +
+  "length was specified, then there are no primers " +
+  "with a product length shorter than the one specified.";
+
+export const eForwardPrimerNotFound =
   "Forward primer has not been found in sequence. " +
   "Make sure forward primer is correct.";
 
-export const wReversePrimerNotFound =
+export const eReversePrimerNotFound =
   "Reverse primer has not been found in sequence. " +
   "Make sure reverse primer is correct and not inverted.";
 
-export const wPrimersOverlap =
+export const ePrimersOverlap =
   "Forward and reverse primers overlap. " +
   "Make sure both primers are correct and in correct fields.";
 
-export const wReversePrecedesForward =
+export const eReversePrecedesForward =
   "Reverse primer precedes forward primer in sequence. " +
   "Make sure both primers are correct and in correct fields.";
 
-export const wForwardOccursMoreThanOnce =
+export const eForwardOccursMoreThanOnce =
   "Forward primer occurs more than once in sequence. " +
   "Make sure forward primer is correct.";
 
-export const wReverseOccursMoreThanOnce =
+export const eReverseOccursMoreThanOnce =
   "Reverse primer occurs more than once in sequence. " +
   "Make sure reverse primer is correct.";
 
-export const wNoProductLength =
+export const eNoProductLength =
   "Product length is not available. " +
   "Make sure both primers are correct and can be found in sequence.";
 
-export const wNoGeneName = "Gene name is not specified.";
+export const eNoGeneName = "Gene name is not specified.";
 
-export const wSequenceNotFound = "Sequence has not been found on Ensembl.";
+export const eSequenceNotFound = "Sequence has not been found on Ensembl.";
 
-export const wSpeciesNotSpecified = "Species is not specified.";
+export const eSpeciesNotSpecified = "Species is not specified.";
 
-export const wNoSequence = "Sequence is not specified.";
+export const eNoSequence = "Sequence is not specified.";
 
 /////////////////////
 /// BUTTON TITLES ///

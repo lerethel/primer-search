@@ -148,7 +148,7 @@ eventMap.paste.push((primer, event) => {
 
     parsedJSON.length
       ? populateFromJSON(parsedJSON)
-      : fn.info(not.iCopiedListEmpty);
+      : fn.error(not.eCopiedListEmpty);
   } else {
     event.target.value = clipboardText;
 
@@ -184,52 +184,40 @@ eventMap.click.push((primer) => {
   // Unmark everything now in case of errors.
   fn.unmark();
 
-  const primerWarning = new fn.WarningQueue();
-
   // Check that the primers are in the sequence.
-  primerWarning.append(forwardIndex < 0, not.wForwardPrimerNotFound);
-  primerWarning.append(reverseIndex < 0, not.wReversePrimerNotFound);
+  fn.error(not.eForwardPrimerNotFound, forwardIndex < 0);
+  fn.error(not.eReversePrimerNotFound, reverseIndex < 0);
 
-  if (primerWarning.success) {
-    // Check that the reverse primer follows the forward primer.
-    primerWarning.append(
-      forwardIndex > reverseIndex,
-      not.wReversePrecedesForward
-    );
+  // Check that the reverse primer follows the forward primer.
+  fn.error(not.eReversePrecedesForward, forwardIndex > reverseIndex);
 
-    // Check that the primers don't overlap.
-    primerWarning.append(
-      forwardIndex + forwardValue.length > reverseIndex,
-      not.wPrimersOverlap
-    );
+  // Check that the primers don't overlap.
+  fn.error(
+    not.ePrimersOverlap,
+    forwardIndex + forwardValue.length > reverseIndex
+  );
 
-    // Check that the primers occur only once in the sequence.
-    primerWarning.append(
-      seqText.includes(forwardValue, forwardIndex + forwardValue.length),
-      not.wForwardOccursMoreThanOnce
-    );
-    primerWarning.append(
-      seqText.includes(
-        reversedReverseValue,
-        reverseIndex + reverseValue.length
-      ),
-      not.wReverseOccursMoreThanOnce
-    );
-  }
+  // Check that the primers occur only once in the sequence.
+  fn.error(
+    not.eForwardOccursMoreThanOnce,
+    seqText.includes(forwardValue, forwardIndex + forwardValue.length)
+  );
+  fn.error(
+    not.eReverseOccursMoreThanOnce,
+    seqText.includes(reversedReverseValue, reverseIndex + reverseValue.length)
+  );
 
-  primerWarning.run(() => {
-    fn.mark(primer);
+  fn.mark(primer);
 
-    const product = seqText.substring(
-      forwardIndex,
-      reverseIndex + reverseValue.length
-    );
+  const product = seqText.substring(
+    forwardIndex,
+    reverseIndex + reverseValue.length
+  );
 
-    showProductLength(primer.pair, product.length);
+  showProductLength(primer.pair, product.length);
 
-    primer.forward.dataset.cachedValue = forwardValue;
-    primer.reverse.dataset.cachedValue = reverseValue;
-  });
+  primer.forward.dataset.cachedValue = forwardValue;
+  primer.reverse.dataset.cachedValue = reverseValue;
 });
 
 // Copy information about a primer pair to the clipboard.
@@ -240,21 +228,18 @@ eventMap.click.push((primer) => {
 
   const geneName = cE.geneName.value.trim();
   const productLengthElement = getProductLengthElement(primer.pair);
-  const pairInfoWarning = new fn.WarningQueue();
 
-  pairInfoWarning.append(!geneName, not.wNoGeneName);
-  pairInfoWarning.append(
-    !productLengthElement.classList.contains(css.shownProductLengthClass),
-    not.wNoProductLength
+  fn.error(not.eNoGeneName, !geneName);
+  fn.error(
+    not.eNoProductLength,
+    !productLengthElement.classList.contains(css.shownProductLengthClass)
   );
 
-  pairInfoWarning.run(() => {
-    navigator.clipboard.writeText(
-      `${geneName} (F): ${primer.forward.value}\n${geneName} ` +
-        `(R): ${primer.reverse.value}\n${productLengthElement.textContent}`
-    );
-    fn.info(not.iPrimerPairInfoCopied);
-  });
+  navigator.clipboard.writeText(
+    `${geneName} (F): ${primer.forward.value}\n${geneName} ` +
+      `(R): ${primer.reverse.value}\n${productLengthElement.textContent}`
+  );
+  fn.success(not.sPrimerPairInfoCopied);
 });
 
 // Remove a primer pair.
