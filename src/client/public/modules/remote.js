@@ -26,7 +26,7 @@ export function findTaxons() {
   taxonTimer = setTimeout(async () => {
     const response = await taxonRequest.send({ search });
 
-    if (!response?.ok) {
+    if (!response.ok) {
       return;
     }
 
@@ -55,10 +55,6 @@ export async function findSeq() {
 
   fn.info(not.iSearchingForSequence);
   const response = await seqRequest.send({ species, gene });
-
-  if (!response) {
-    return;
-  }
 
   fn.error(not.eSequenceNotFound, !response.ok);
 
@@ -93,38 +89,31 @@ export async function findPrimers() {
     headers: { "Content-Type": "application/json" },
   });
 
-  if (!initResponse) {
-    return;
-  }
-
   const initJSON = await initResponse.json();
 
   fn.error(initJSON.message, !initResponse.ok);
 
   primerInterval = setInterval(async () => {
-    const primerResponse = await primerRequest.send(
-      { job_key: initJSON.job_key },
-      { cache: "no-store" }
-    );
+    try {
+      const primerResponse = await primerRequest.send(
+        { job_key: initJSON.job_key },
+        { cache: "no-store" }
+      );
 
-    if (!primerResponse) {
+      const primerJSON = await primerResponse.json();
+
+      if (primerJSON.message) {
+        primerResponse.ok
+          ? fn.info(primerJSON.message)
+          : fn.error(primerJSON.message);
+        return;
+      }
+
       clearInterval(primerInterval);
-      return;
+      pair.populateFromJSON(primerJSON);
+      fn.success(not.sPrimersDownloaded);
+    } catch {
+      clearInterval(primerInterval);
     }
-
-    const primerJSON = await primerResponse.json();
-
-    if (primerJSON.message) {
-      primerResponse.ok
-        ? fn.info(primerJSON.message)
-        : fn.error(primerJSON.message, true, () =>
-            clearInterval(primerInterval)
-          );
-      return;
-    }
-
-    clearInterval(primerInterval);
-    pair.populateFromJSON(primerJSON);
-    fn.success(not.sPrimersDownloaded);
   }, 30000);
 }

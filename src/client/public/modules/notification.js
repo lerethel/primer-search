@@ -65,6 +65,10 @@ export const eSpeciesNotSpecified = "Species is not specified.";
 
 export const eNoSequence = "Sequence is not specified.";
 
+export const eNetworkError =
+  "Network error: unable to connect to server. " +
+  "Check your internet connection and try again.";
+
 /////////////////////
 /// BUTTON TITLES ///
 

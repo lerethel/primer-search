@@ -70,9 +70,9 @@ export function success(text, condition) {
   showToast({ text, className: "success-toast" }, condition);
 }
 
-export function error(text, condition = true, callback) {
+export function error(text, condition = true) {
   showToast({ text, className: "error-toast" }, condition);
-  callback && callback();
+
   if (condition) {
     throw new Error(text);
   }
@@ -103,8 +103,10 @@ export class SingletonRequest {
       });
     } catch (e) {
       if (e.name !== "AbortError") {
-        throw e;
+        error(not.eNetworkError);
       }
+
+      throw e;
     } finally {
       this.#controller = undefined;
     }
