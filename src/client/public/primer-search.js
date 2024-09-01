@@ -21,8 +21,6 @@ cE.convertBtn.addEventListener(
 cE.seq.addEventListener(
   "paste",
   (event) => {
-    cE.geneName.value = "";
-
     if (cE.convertOnPaste.checked) {
       event.preventDefault();
       fn.joinExons(event.clipboardData.getData("text"));
