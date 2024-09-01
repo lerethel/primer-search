@@ -152,10 +152,8 @@ eventMap.paste.push((primer, event) => {
   } else {
     event.target.value = clipboardText;
 
-    if (primer.forward.value || primer.reverse.value) {
+    if (primer.forward.value && primer.reverse.value) {
       // Mark a primer pair in the gene sequence after it's pasted.
-      // The condition checks the presence of only one of the primers
-      // because the paste event is fired before the input field is updated.
       primer.pair
         .getElementsByClassName(css.markPrimerPairBtnClass)[0]
         .dispatchEvent(

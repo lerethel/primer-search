@@ -39,9 +39,11 @@ pair.appendPrimerPair();
 
 cE.addPrimerPairBtn.addEventListener("click", pair.appendPrimerPair, false);
 
-for (const eventType of ["paste", "click", "keyup"]) {
+// Use "keyup" instead of "input" because the latter
+// doesn't work when preventDefault() is called in "paste."
+["paste", "click", "keyup"].forEach((eventType) => {
   cE.primerPairList.addEventListener(eventType, pair.handleEvent, false);
-}
+});
 
 //////////////
 /// REMOTE ///
