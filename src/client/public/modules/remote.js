@@ -93,10 +93,16 @@ export async function findPrimers() {
 
   fn.error(initJSON.message, !initResponse.ok);
 
-  primerInterval = setInterval(async () => {
+  const poller = createPrimerPoller(initJSON.job_key);
+  primerInterval = setInterval(poller, 30000);
+  poller();
+}
+
+function createPrimerPoller(jobKey) {
+  return async () => {
     try {
       const primerResponse = await primerRequest.send(
-        { job_key: initJSON.job_key },
+        { job_key: jobKey },
         { cache: "no-store" }
       );
 
@@ -115,5 +121,5 @@ export async function findPrimers() {
     } catch {
       clearInterval(primerInterval);
     }
-  }, 30000);
+  };
 }

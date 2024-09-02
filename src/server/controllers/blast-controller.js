@@ -1,6 +1,8 @@
+import { hash } from "crypto";
 import { parse as parseHTML } from "node-html-parser";
 import { URL } from "url";
 import blastDefaults from "../config/blast-defaults.js";
+import * as db from "../utils/db.js";
 
 function buildBLASTForm(options) {
   const form = new FormData();
@@ -30,35 +32,45 @@ const blastPrefix = "Primer-BLAST: ";
 
 // Some error pages on Primer-BLAST seem to have an empty #alignments element.
 // Use a Map to control the order in which the selectors are run.
-const senderBySelector = new Map();
+const parserBySelector = new Map();
 
-senderBySelector.set(".error, .info", (req, res, element) => {
+parserBySelector.set(".error, .info", (req, res, element) => {
   const message = element?.textContent;
-  res.status(404).json({
-    message: message
-      ? blastPrefix + cleanMessage(message)
-      : "Unknown error occurred.",
-  });
+
+  return {
+    status: 404,
+    data: {
+      message: message
+        ? blastPrefix + cleanMessage(message)
+        : "Unknown error occurred.",
+    },
+  };
 });
 
-senderBySelector.set("#statInfo", (req, res, element) => {
+parserBySelector.set("#statInfo", (req, res, element) => {
   const statusMessage = element.getElementsByTagName("td")[1].textContent;
-  res.status(202).json({
-    message: blastPrefix + cleanMessage(statusMessage),
-  });
+
+  return {
+    status: 202,
+    data: { message: blastPrefix + cleanMessage(statusMessage) },
+  };
 });
 
-senderBySelector.set("#userGuidedForm", (req, res) => {
+parserBySelector.set("#userGuidedForm", (req) => {
   const jobURL = `${blastURL}?job_key=${req.query.job_key}`;
-  res.status(202).json({
-    message:
-      "Primer-BLAST needs user guidance. Follow " +
-      "the link below to resolve the issue. You can " +
-      `return to this page after submitting the form.\n\n${jobURL}`,
-  });
+
+  return {
+    status: 202,
+    data: {
+      message:
+        "Primer-BLAST needs user guidance. Follow " +
+        "the link below to resolve the issue. You can " +
+        `return to this page after submitting the form.\n\n${jobURL}`,
+    },
+  };
 });
 
-senderBySelector.set("#alignments", (req, res, element) => {
+parserBySelector.set("#alignments", (req, res, element) => {
   const entries = element
     .getElementsByTagName("th")
     .filter((th) => rprimerField.test(th.textContent));
@@ -74,43 +86,86 @@ senderBySelector.set("#alignments", (req, res, element) => {
     });
   }
 
-  res.status(200).json(primerInfo);
+  return { status: 200, data: primerInfo };
 });
 
 export async function initSearch(req, res) {
   const { sequence, species, onSpliceSite, maxProductLength } = req.body;
+
+  const options = {
+    INPUT_SEQUENCE: sequence,
+    ORGANISM: species,
+    PRIMER_ON_SPLICE_SITE: onSpliceSite,
+    PRIMER_PRODUCT_MAX: maxProductLength,
+  };
+
+  const id = hash("sha1", JSON.stringify(options));
+  const select = await db.get("SELECT * FROM primer WHERE id = ?;", [id]);
+
+  if (select) {
+    const hoursPassed = (Date.now() - select.job_timestamp) / 1000 / 60 / 60;
+    if (hoursPassed <= 12 || select.data) {
+      return res.json({ job_key: select.job_key });
+    }
+  }
+
   const response = await fetch(blastURL, {
     method: "POST",
-    body: buildBLASTForm({
-      INPUT_SEQUENCE: sequence,
-      ORGANISM: species,
-      PRIMER_ON_SPLICE_SITE: onSpliceSite,
-      PRIMER_PRODUCT_MAX: maxProductLength,
-    }),
+    body: buildBLASTForm(options),
   });
 
   const retryURL = response.headers.get("x-ncbi-retry-url");
 
   if (!retryURL) {
-    const document = await responseToDOM(response);
-    return senderBySelector.get(".error, .info")(
+    const { status, data } = parserBySelector.get(".error, .info")(
       req,
       res,
-      document.querySelector(".error, .info")
+      (await responseToDOM(response)).querySelector(".error, .info")
     );
+    return res.status(status).json(data);
   }
 
-  res.json({ job_key: URL.parse(retryURL).searchParams.get("job_key") });
+  const jobKey = URL.parse(retryURL).searchParams.get("job_key");
+
+  res.json({ job_key: jobKey });
+  select
+    ? db.run("UPDATE primer SET job_key = ?, job_timestamp = ? WHERE id = ?;", [
+        jobKey,
+        Date.now(),
+        id,
+      ])
+    : db.run(
+        "INSERT INTO primer (id, job_key, job_timestamp) VALUES (?, ?, ?);",
+        [id, jobKey, Date.now()]
+      );
 }
 
 export async function getPrimers(req, res) {
-  const response = await fetch(`${blastURL}?job_key=${req.query.job_key}`);
+  const jobKey = req.query.job_key;
+  const select = await db.get("SELECT data FROM primer WHERE job_key = ?;", [
+    jobKey,
+  ]);
+
+  if (select?.data) {
+    return res.json(JSON.parse(select.data));
+  }
+
+  const response = await fetch(`${blastURL}?job_key=${jobKey}`);
   const document = await responseToDOM(response);
 
-  for (const [selector, sender] of senderBySelector) {
+  for (const [selector, parser] of parserBySelector) {
     const element = document.querySelector(selector);
     if (element) {
-      return sender(req, res, element);
+      const { status, data } = parser(req, res, element);
+
+      if (selector === "#alignments") {
+        db.run("UPDATE primer SET data = ? WHERE job_key = ?;", [
+          JSON.stringify(data),
+          jobKey,
+        ]);
+      }
+
+      return res.status(status).json(data);
     }
   }
 }

@@ -1,6 +1,7 @@
 import express from "express";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { init as initDatabase } from "./utils/db.js";
 
 import blastRouter from "./routes/blast-router.js";
 import ensemblRouter from "./routes/ensembl-router.js";
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/", blastRouter);
 app.use("/", ensemblRouter);
 app.use("/", indexRouter);
+initDatabase();
 
 app.listen(port, () => {
   console.log(serverReadyMessage);
