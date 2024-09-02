@@ -56,20 +56,6 @@ parserBySelector.set("#statInfo", (req, res, element) => {
   };
 });
 
-parserBySelector.set("#userGuidedForm", (req) => {
-  const jobURL = `${blastURL}?job_key=${req.query.job_key}`;
-
-  return {
-    status: 202,
-    data: {
-      message:
-        "Primer-BLAST needs user guidance. Follow " +
-        "the link below to resolve the issue. You can " +
-        `return to this page after submitting the form.\n\n${jobURL}`,
-    },
-  };
-});
-
 parserBySelector.set("#alignments", (req, res, element) => {
   const entries = element
     .getElementsByTagName("th")
@@ -97,6 +83,7 @@ export async function initSearch(req, res) {
     ORGANISM: species,
     PRIMER_ON_SPLICE_SITE: onSpliceSite,
     PRIMER_PRODUCT_MAX: maxProductLength,
+    SEARCHMODE: "2",
   };
 
   const id = hash("sha1", JSON.stringify(options));
