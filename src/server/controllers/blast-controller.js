@@ -30,29 +30,17 @@ const blastURL =
 const rprimerField = /^(?:(?:forward|reverse) primer|product length)$/i;
 const blastPrefix = "Primer-BLAST: ";
 
-// Some error pages on Primer-BLAST seem to have an empty #alignments element.
-// Use a Map to control the order in which the selectors are run.
+// The selectors aren't mutually exclusive.
+// Use a Map to control the order in which they are run, along with a validity check.
 const parserBySelector = new Map();
 
-parserBySelector.set(".error, .info", (req, res, element) => {
-  const message = element?.textContent;
-
-  return {
-    status: 404,
-    data: {
-      message: message
-        ? blastPrefix + cleanMessage(message)
-        : "Unknown error occurred.",
-    },
-  };
-});
-
 parserBySelector.set("#statInfo", (req, res, element) => {
-  const statusMessage = element.getElementsByTagName("td")[1].textContent;
+  const message = element.getElementsByTagName("td")[1].textContent;
 
   return {
     status: 202,
-    data: { message: blastPrefix + cleanMessage(statusMessage) },
+    valid: message.length > 0,
+    data: { message: blastPrefix + cleanMessage(message) },
   };
 });
 
@@ -72,7 +60,27 @@ parserBySelector.set("#alignments", (req, res, element) => {
     });
   }
 
-  return { status: 200, data: primerInfo };
+  return { status: 200, valid: primerInfo.length > 0, data: primerInfo };
+});
+
+parserBySelector.set(".error, .info", (req, res, element) => {
+  const message = element.textContent;
+
+  return {
+    status: 404,
+    valid: message.length > 0,
+    data: { message: blastPrefix + cleanMessage(message) },
+  };
+});
+
+// The default option, which should always be at the end,
+// be valid, and include an element that is always in the HTML page.
+parserBySelector.set("html", () => {
+  return {
+    status: 404,
+    valid: true,
+    data: { message: "Unknown error occurred." },
+  };
 });
 
 export async function initSearch(req, res) {
@@ -142,17 +150,24 @@ export async function getPrimers(req, res) {
 
   for (const [selector, parser] of parserBySelector) {
     const element = document.querySelector(selector);
-    if (element) {
-      const { status, data } = parser(req, res, element);
 
-      if (selector === "#alignments") {
-        db.run("UPDATE primer SET data = ? WHERE job_key = ?;", [
-          JSON.stringify(data),
-          jobKey,
-        ]);
-      }
-
-      return res.status(status).json(data);
+    if (!element) {
+      continue;
     }
+
+    const { status, valid, data } = parser(req, res, element);
+
+    if (!valid) {
+      continue;
+    }
+
+    if (selector === "#alignments") {
+      db.run("UPDATE primer SET data = ? WHERE job_key = ?;", [
+        JSON.stringify(data),
+        jobKey,
+      ]);
+    }
+
+    return res.status(status).json(data);
   }
 }
