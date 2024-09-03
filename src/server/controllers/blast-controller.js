@@ -42,6 +42,8 @@ const selectorAlias = {
 const parserBySelector = new Map();
 
 parserBySelector.set(selectorAlias.status, (req, res, element) => {
+  // Remove links since they serve as buttons here and aren't related to the text.
+  element.getElementsByTagName("a").forEach((link) => link.remove());
   const message = element.getElementsByTagName("td")[1].textContent;
 
   return {
