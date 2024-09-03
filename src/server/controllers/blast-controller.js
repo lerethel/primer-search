@@ -37,20 +37,25 @@ const selectorAlias = {
   default: "html",
 };
 
+const rerrorStatus = /Failed|Canceled/;
+
 // The selectors aren't mutually exclusive.
 // Use a Map to control the order in which they are run, along with a validity check.
 const parserBySelector = new Map();
 
 parserBySelector.set(selectorAlias.status, (req, res, element) => {
+  const messageElement = element.getElementsByTagName("td")[1];
   // Remove links since they serve as buttons here and aren't related to the text.
-  element.getElementsByTagName("a").forEach((link) => link.remove());
-  const message = element.getElementsByTagName("td")[1].textContent;
+  messageElement.getElementsByTagName("a").forEach((link) => link.remove());
+  const message = messageElement.textContent;
 
-  return {
-    status: 202,
-    valid: message.length > 0,
-    data: { message: blastPrefix + cleanMessage(message) },
-  };
+  return rerrorStatus.test(message)
+    ? parserBySelector.get(selectorAlias.error)(req, res, messageElement)
+    : {
+        status: 202,
+        valid: message.length > 0,
+        data: { message: blastPrefix + cleanMessage(message) },
+      };
 });
 
 parserBySelector.set(selectorAlias.primer, (req, res, element) => {
