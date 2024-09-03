@@ -97,6 +97,26 @@ parserBySelector.set(selectorAlias.default, () => {
   };
 });
 
+async function isJobActive(req, res, jobKey) {
+  const response = await fetch(`${blastURL}?job_key=${jobKey}`);
+  const document = await responseToDOM(response);
+
+  for (const selector of [selectorAlias.status, selectorAlias.primer]) {
+    const element = document.querySelector(selector);
+
+    if (element) {
+      const { valid, status } = parserBySelector.get(selector)(
+        req,
+        res,
+        element
+      );
+      return valid && status < 400;
+    }
+  }
+
+  return false;
+}
+
 export async function initSearch(req, res) {
   const { sequence, species, onSpliceSite, maxProductLength } = req.body;
 
@@ -111,11 +131,11 @@ export async function initSearch(req, res) {
   const id = hash("sha1", JSON.stringify(options));
   const select = await db.get("SELECT * FROM primer WHERE id = ?;", [id]);
 
-  if (select) {
-    const hoursPassed = (Date.now() - select.job_timestamp) / 1000 / 60 / 60;
-    if (hoursPassed <= 12 || select.data) {
-      return res.json({ job_key: select.job_key });
-    }
+  if (
+    select &&
+    (select.data || (await isJobActive(req, res, select.job_key)))
+  ) {
+    return res.json({ job_key: select.job_key });
   }
 
   const response = await fetch(blastURL, {
