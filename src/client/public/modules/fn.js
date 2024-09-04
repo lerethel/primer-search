@@ -116,7 +116,7 @@ export class SingletonRequest {
 /////////////
 /// OTHER ///
 
-const rexonHeader = /^\s*>.+?$/gm;
+const rexonHeader = /^\s*>.+?$/m;
 const rwhitespace = /\s+/g;
 
 export function joinExons(fastaSeq) {
