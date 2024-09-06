@@ -57,9 +57,10 @@ export function removePrimerPair(primerPair, keepLast = false) {
   }
 }
 
-export function removeAllPrimerPairs() {
-  while (cE.primerPairList.childElementCount) {
-    removePrimerPair(cE.primerPairList.lastElementChild);
+export function removeAllPrimerPairs(keepLast) {
+  let count = cE.primerPairList.childElementCount;
+  while (count--) {
+    removePrimerPair(cE.primerPairList.lastElementChild, keepLast);
   }
 }
 

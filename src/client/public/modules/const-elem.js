@@ -6,6 +6,9 @@ export const convertOnPaste = document.getElementById(css.convertOnPasteId);
 export const geneName = document.getElementById(css.geneNameId);
 
 export const addPrimerPairBtn = document.getElementById(css.addPrimerPairBtnId);
+export const removeAllPrimerPairsBtn = document.getElementById(
+  css.removeAllPrimerPairsBtnId
+);
 export const primerPairList = document.getElementById(css.primerPairListId);
 export const primerPairTemplate = document.getElementById(
   css.primerPairTemplateId

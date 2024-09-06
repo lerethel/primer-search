@@ -12,6 +12,7 @@ export const productLengthClass = "product-length";
 export const shownProductLengthClass = "shown";
 
 export const addPrimerPairBtnId = "add-primer-pair-btn";
+export const removeAllPrimerPairsBtnId = "remove-all-primer-pairs-btn";
 export const primerPairTemplateId = "primer-pair-template";
 export const primerPairListId = "primer-pair-list";
 

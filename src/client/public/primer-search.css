@@ -138,10 +138,6 @@ mark {
   border: 0;
 }
 
-#add-primer-pair-btn {
-  align-self: flex-start;
-}
-
 #primer-pair-list.remove-btn-shown .remove-primer-pair-btn {
   visibility: visible;
 }
