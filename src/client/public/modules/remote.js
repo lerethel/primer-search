@@ -64,7 +64,7 @@ export async function findSeq() {
 
 const primerRequest = new fn.SingletonRequest("/blast/search");
 
-let primerInterval;
+let primerTimer;
 
 export async function findPrimers() {
   const species = cE.species.value.trim();
@@ -75,7 +75,7 @@ export async function findPrimers() {
   fn.error(not.eSpeciesNotSpecified, !species);
   fn.error(not.eNoSequence, !sequence);
 
-  clearInterval(primerInterval);
+  clearTimeout(primerTimer);
   fn.info(not.iRequestBeingProcessed);
 
   const initResponse = await primerRequest.send(null, {
@@ -93,33 +93,29 @@ export async function findPrimers() {
 
   fn.error(initJSON.message, !initResponse.ok);
 
-  const poller = createPrimerPoller(initJSON.job_key);
-  primerInterval = setInterval(poller, 30000);
-  poller();
+  createPrimerPoller(initJSON.job_key, 30000)();
 }
 
-function createPrimerPoller(jobKey) {
-  return async () => {
-    try {
-      const primerResponse = await primerRequest.send(
-        { job_key: jobKey },
-        { cache: "no-store" }
-      );
+function createPrimerPoller(jobKey, interval) {
+  return async function poller() {
+    const primerResponse = await primerRequest.send(
+      { job_key: jobKey },
+      { cache: "no-store" }
+    );
 
-      const primerJSON = await primerResponse.json();
+    const primerJSON = await primerResponse.json();
 
-      if (primerJSON.message) {
-        primerResponse.ok
-          ? fn.info(primerJSON.message)
-          : fn.error(primerJSON.message);
-        return;
+    if (primerJSON.message) {
+      if (!primerResponse.ok) {
+        fn.error(primerJSON.message);
       }
 
-      clearInterval(primerInterval);
-      pair.populateFromJSON(primerJSON);
-      fn.success(not.sPrimersDownloaded);
-    } catch {
-      clearInterval(primerInterval);
+      fn.info(primerJSON.message);
+      primerTimer = setTimeout(poller, interval);
+      return;
     }
+
+    pair.populateFromJSON(primerJSON);
+    fn.success(not.sPrimersDownloaded);
   };
 }
