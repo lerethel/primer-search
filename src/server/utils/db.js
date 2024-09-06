@@ -1,12 +1,8 @@
 import * as path from "path";
 import sqlite3 from "sqlite3";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 function open() {
-  return new sqlite3.Database(path.join(__dirname, "..", "cache.db"));
+  return new sqlite3.Database(path.join(import.meta.dirname, "..", "cache.db"));
 }
 
 export function init() {

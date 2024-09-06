@@ -1,14 +1,10 @@
 import express from "express";
 import * as path from "path";
-import { fileURLToPath } from "url";
 import { init as initDatabase } from "./utils/db.js";
 
 import blastRouter from "./routes/blast-router.js";
 import ensemblRouter from "./routes/ensembl-router.js";
 import indexRouter from "./routes/index-router.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const port = process.env.PORT || 3000;
 const serverReadyMessage =
@@ -18,7 +14,9 @@ const serverReadyMessage =
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "..", "client", "public")));
+app.use(
+  express.static(path.join(import.meta.dirname, "..", "client", "public"))
+);
 app.use(express.json());
 app.use("/", blastRouter);
 app.use("/", ensemblRouter);
