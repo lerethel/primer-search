@@ -33,14 +33,10 @@ cE.seq.addEventListener(
 /// PRIMER PAIR ///
 
 // Add the first primer pair.
-pair.appendPrimerPair();
+pair.appendEmpty();
 
-cE.addPrimerPairBtn.addEventListener("click", pair.appendPrimerPair, false);
-cE.removeAllPrimerPairsBtn.addEventListener(
-  "click",
-  () => pair.removeAllPrimerPairs(true),
-  false
-);
+cE.addPrimerPairBtn.addEventListener("click", pair.appendEmpty, false);
+cE.removeAllPrimerPairsBtn.addEventListener("click", pair.removeAll, false);
 
 // Use "keyup" instead of "input" because the latter
 // doesn't work when preventDefault() is called in "paste."

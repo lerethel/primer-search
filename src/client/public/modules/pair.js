@@ -6,139 +6,150 @@ import * as not from "./notification.js";
 /////////////////////////////////////
 /// METHODS FOR OPERATING THE DOM ///
 
-const rproductLength = /\{pl\}|\d+/;
-
-function createPrimerPair() {
-  const primerPair = cE.primerPairTemplate.content.cloneNode(true).children[0];
-
-  primerPair.getElementsByClassName(css.removePrimerPairBtnClass)[0].title =
-    not.tRemovePrimerPair;
-
-  primerPair.getElementsByClassName(css.markPrimerPairBtnClass)[0].title =
-    not.tMarkPrimerPair;
-
-  primerPair.getElementsByClassName(css.copyPairInfoBtnClass)[0].title =
-    not.tCopyPairInfo;
-
-  return primerPair;
+function showRemoveButton() {
+  cE.primerPairList.classList.add(css.removeBtnShownClass);
 }
 
-function getPrimerElements(primerPair) {
-  return primerPair.getElementsByClassName(css.primerClass);
+function hideRemoveButton() {
+  cE.primerPairList.classList.remove(css.removeBtnShownClass);
 }
 
-export function appendPrimerPair(forward, reverse, productLength) {
-  const primerPair = createPrimerPair();
+let pairCache = [];
 
-  if (forward && reverse) {
-    const [forwardElement, reverseElement] = getPrimerElements(primerPair);
-    forwardElement.value = forward;
-    reverseElement.value = reverse;
+class PrimerPair {
+  pair = cE.primerPairTemplate.content.cloneNode(true).children[0];
+
+  productLength = new ProductLength(this.pair);
+
+  buttons = {
+    remove: this.pair.getElementsByClassName(css.removePrimerPairBtnClass)[0],
+    mark: this.pair.getElementsByClassName(css.markPrimerPairBtnClass)[0],
+    copyInfo: this.pair.getElementsByClassName(css.copyPairInfoBtnClass)[0],
+  };
+
+  constructor(forward, reverse, productLength) {
+    this.buttons.remove.title = not.tRemovePrimerPair;
+    this.buttons.mark.title = not.tMarkPrimerPair;
+    this.buttons.copyInfo.title = not.tCopyPairInfo;
+
+    [this.forward, this.reverse] = this.pair.getElementsByClassName(
+      css.primerClass
+    );
+
+    if (forward && reverse && productLength) {
+      this.forward.value = forward;
+      this.reverse.value = reverse;
+      this.productLength.value = productLength;
+      this.productLength.show();
+    }
   }
 
-  if (productLength) {
-    showProductLength(primerPair, productLength);
+  append() {
+    cE.primerPairList.append(this.pair);
+    pairCache.push(this);
+
+    if (pairCache.length > 1) {
+      showRemoveButton();
+    }
   }
 
-  cE.primerPairList.append(primerPair);
+  remove(leaveEmpty) {
+    this.pair.remove();
+    fn.unmark(this);
+    pairCache = pairCache.filter((instance) => instance !== this);
 
-  if (cE.primerPairList.childElementCount > 1) {
-    showRemovePrimerPairBtn();
+    if (leaveEmpty && !pairCache.length) {
+      appendEmpty();
+      hideRemoveButton();
+    }
+  }
+
+  static find(pair) {
+    return pairCache.find((instance) => instance.pair === pair);
   }
 }
 
-export function removePrimerPair(primerPair, keepLast = false) {
-  primerPair.remove();
-  fn.unmark({ pair: primerPair });
-
-  if (keepLast && !cE.primerPairList.childElementCount) {
-    appendPrimerPair();
-    hideRemovePrimerPairBtn();
-  }
+export function appendEmpty() {
+  return new PrimerPair().append();
 }
 
-export function removeAllPrimerPairs(keepLast) {
-  let count = cE.primerPairList.childElementCount;
+export function removeAll(leaveEmpty) {
+  let count = pairCache.length;
   while (count--) {
-    removePrimerPair(cE.primerPairList.lastElementChild, keepLast);
+    pairCache[count].remove(leaveEmpty);
   }
 }
 
 export function populateFromJSON(json) {
-  removeAllPrimerPairs();
-  json.forEach((jsonPair) => {
-    appendPrimerPair(jsonPair.forward, jsonPair.reverse, jsonPair.length);
+  removeAll();
+  json.forEach(({ forward, reverse, length }) => {
+    new PrimerPair(forward, reverse, length).append();
   });
 }
 
-export function showRemovePrimerPairBtn() {
-  cE.primerPairList.classList.add(css.removeBtnShownClass);
-}
+const rproductLength = /\d+/;
 
-export function hideRemovePrimerPairBtn() {
-  cE.primerPairList.classList.remove(css.removeBtnShownClass);
-}
+class ProductLength {
+  #element;
 
-function getProductLengthElement(primerPair) {
-  return primerPair.getElementsByClassName(css.productLengthClass)[0];
-}
+  constructor(pair) {
+    this.#element = pair.getElementsByClassName(css.productLengthClass)[0];
+  }
 
-export function showProductLength(primerPair, productLength) {
-  const productLengthElement = getProductLengthElement(primerPair);
+  get value() {
+    const { textContent } = this.#element;
 
-  productLengthElement.textContent = productLengthElement.textContent.replace(
-    rproductLength,
-    productLength
-  );
+    return textContent.includes("{pl}")
+      ? undefined
+      : textContent.match(rproductLength)[0];
+  }
 
-  productLengthElement.classList.add(css.shownProductLengthClass);
-}
+  set value(value) {
+    const { textContent } = this.#element;
 
-export function hideProductLength(primerPair) {
-  getProductLengthElement(primerPair).classList.remove(
-    css.shownProductLengthClass
-  );
+    this.#element.textContent = textContent.includes("{pl}")
+      ? textContent.replace("{pl}", value)
+      : textContent.replace(rproductLength, value);
+  }
+
+  show() {
+    this.#element.classList.add(css.shownProductLengthClass);
+  }
+
+  hide() {
+    this.#element.classList.remove(css.shownProductLengthClass);
+  }
+
+  get shown() {
+    return this.#element.classList.contains(css.shownProductLengthClass);
+  }
 }
 
 ///////////////////////////////////
 /// METHODS FOR HANDLING EVENTS ///
 
 export function handleEvent(event) {
-  const primerPair = event.target.closest("." + css.primerPairClass);
+  const pair = PrimerPair.find(event.target.closest("." + css.primerPairClass));
 
-  if (!primerPair) {
+  if (!pair) {
     return;
   }
 
-  const [forwardElement, reverseElement] = getPrimerElements(primerPair);
+  pair.forward.value = pair.forward.value.trim();
+  pair.reverse.value = pair.reverse.value.trim();
 
-  forwardElement.value = forwardElement.value.trim();
-  reverseElement.value = reverseElement.value.trim();
-
-  const primer = {
-    forward: forwardElement,
-    reverse: reverseElement,
-    pair: primerPair,
-    target: event.target,
-  };
-
-  eventMap[event.type].forEach((callback) => {
-    callback(primer, event);
-  });
+  eventMap[event.type].forEach((callback) => callback(pair, event));
 }
 
-const eventMap = {
-  paste: [],
-  click: [],
-  keyup: [],
-};
+const eventMap = { paste: [], click: [], keyup: [] };
 
-eventMap.paste.push((primer, event) => {
-  if (!isTargetPrimer(primer)) {
+eventMap.paste.push((pair, event) => {
+  if (!isTargetPrimer(pair, event)) {
     return;
   }
 
   event.preventDefault();
+
   const clipboardText = event.clipboardData.getData("text").trim();
 
   if (clipboardText.indexOf("<Copied for PrimerSearch>") === 0) {
@@ -153,32 +164,30 @@ eventMap.paste.push((primer, event) => {
   } else {
     event.target.value = clipboardText;
 
-    if (primer.forward.value && primer.reverse.value) {
+    if (pair.forward.value && pair.reverse.value) {
       // Mark a primer pair in the gene sequence after it's pasted.
-      primer.pair
-        .getElementsByClassName(css.markPrimerPairBtnClass)[0]
-        .dispatchEvent(
-          new Event("click", {
-            bubbles: true,
-          })
-        );
+      pair.buttons.mark.dispatchEvent(new Event("click", { bubbles: true }));
     }
   }
 });
 
 // Mark a primer pair in the gene sequence; calculate
 // and show the product length of the primer pair.
-eventMap.click.push((primer) => {
-  if (!isClickValid(primer, css.markPrimerPairBtnClass)) {
+eventMap.click.push((pair, event) => {
+  if (!isClickValid(pair, event, pair.buttons.mark)) {
     return;
   }
 
   const seqText = cE.seq.textContent;
-  const forwardValue = primer.forward.value;
-  const reverseValue = primer.reverse.value;
+
+  const forwardValue = pair.forward.value;
+  const reverseValue = pair.reverse.value;
   const reversedReverseValue = fn.reverseComplement(reverseValue);
+
   const forwardIndex = seqText.indexOf(forwardValue);
   const reverseIndex = seqText.indexOf(reversedReverseValue);
+  const forwardEndIndex = forwardIndex + forwardValue.length;
+  const reverseEndIndex = reverseIndex + reversedReverseValue.length;
 
   // Unmark everything now in case of errors.
   fn.unmark();
@@ -191,94 +200,83 @@ eventMap.click.push((primer) => {
   fn.error(not.eReversePrecedesForward, forwardIndex > reverseIndex);
 
   // Check that the primers don't overlap.
-  fn.error(
-    not.ePrimersOverlap,
-    forwardIndex + forwardValue.length > reverseIndex
-  );
+  fn.error(not.ePrimersOverlap, forwardEndIndex > reverseIndex);
 
   // Check that the primers occur only once in the sequence.
   fn.error(
     not.eForwardOccursMoreThanOnce,
-    seqText.includes(forwardValue, forwardIndex + forwardValue.length)
+    seqText.includes(forwardValue, forwardEndIndex)
   );
   fn.error(
     not.eReverseOccursMoreThanOnce,
-    seqText.includes(reversedReverseValue, reverseIndex + reverseValue.length)
+    seqText.includes(reversedReverseValue, reverseEndIndex)
   );
 
-  fn.mark(primer);
+  fn.mark(pair);
 
-  const product = seqText.substring(
-    forwardIndex,
-    reverseIndex + reverseValue.length
-  );
+  const product = seqText.substring(forwardIndex, reverseEndIndex);
+  pair.productLength.value = product.length;
+  pair.productLength.show();
 
-  showProductLength(primer.pair, product.length);
-
-  primer.forward.dataset.cachedValue = forwardValue;
-  primer.reverse.dataset.cachedValue = reverseValue;
+  pair.forward.dataset.cachedValue = forwardValue;
+  pair.reverse.dataset.cachedValue = reverseValue;
 });
 
 // Copy information about a primer pair to the clipboard.
-eventMap.click.push((primer) => {
-  if (!isClickValid(primer, css.copyPairInfoBtnClass)) {
+eventMap.click.push((pair, event) => {
+  if (!isClickValid(pair, event, pair.buttons.copyInfo)) {
     return;
   }
 
   const geneName = cE.geneName.value.trim();
-  const productLengthElement = getProductLengthElement(primer.pair);
 
   fn.error(not.eNoGeneName, !geneName);
-  fn.error(
-    not.eNoProductLength,
-    !productLengthElement.classList.contains(css.shownProductLengthClass)
-  );
+  fn.error(not.eNoProductLength, !pair.productLength.shown);
 
   navigator.clipboard.writeText(
-    `${geneName} (F): ${primer.forward.value}\n${geneName} ` +
-      `(R): ${primer.reverse.value}\n${productLengthElement.textContent}`
+    `${geneName} (F): ${pair.forward.value}\n` +
+      `${geneName} (R): ${pair.reverse.value}\n` +
+      `Product length: ${pair.productLength.value}`
   );
   fn.success(not.sPrimerPairInfoCopied);
 });
 
 // Remove a primer pair.
-eventMap.click.push((primer, event) => {
-  if (event.target.classList.contains(css.removePrimerPairBtnClass)) {
-    removePrimerPair(primer.pair, true);
+eventMap.click.push((pair, event) => {
+  if (event.target === pair.buttons.remove) {
+    pair.remove(true);
   }
 });
 
 // Hide the product length of a primer pair when any of the primers
 // are modified. If the primer pair is marked in the sequence, unmark it.
-eventMap.keyup.push((primer, event) => {
-  if (!isTargetPrimer(primer)) {
+eventMap.keyup.push((pair, event) => {
+  if (!isTargetPrimer(pair, event)) {
     return;
   }
 
-  const {
-    target: { value, dataset },
-  } = event;
+  const { value, dataset } = event.target;
 
   if (value) {
-    showRemovePrimerPairBtn();
+    showRemoveButton();
   }
 
   if (dataset.cachedValue && dataset.cachedValue !== value) {
-    hideProductLength(primer.pair);
-    fn.unmark(primer);
+    pair.productLength.hide();
+    fn.unmark(pair);
     dataset.cachedValue = value;
   }
 });
 
-function isClickValid(primer, className) {
+function isClickValid(pair, event, intendedTarget) {
   return (
     cE.seq.textContent &&
-    primer.forward.value &&
-    primer.reverse.value &&
-    primer.target.closest("." + className)
+    pair.forward.value &&
+    pair.reverse.value &&
+    intendedTarget.contains(event.target)
   );
 }
 
-function isTargetPrimer(primer) {
-  return primer.target === primer.forward || primer.target === primer.reverse;
+function isTargetPrimer(pair, event) {
+  return event.target === pair.forward || event.target === pair.reverse;
 }
