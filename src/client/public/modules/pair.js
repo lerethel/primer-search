@@ -136,7 +136,7 @@ export function handleEvent(event) {
   eventMap[event.type].forEach((callback) => callback(pair, event));
 }
 
-const eventMap = { paste: [], click: [], keyup: [] };
+const eventMap = { paste: [], click: [], input: [] };
 
 eventMap.paste.push((pair, event) => {
   if (!isTargetPrimer(pair, event)) {
@@ -158,6 +158,9 @@ eventMap.paste.push((pair, event) => {
       : fn.error(not.eCopiedListEmpty);
   } else {
     event.target.value = clipboardText;
+    // "Input" has to be called manually since the default pasting
+    // behavior is prevented, i.e., pasting doesn't update the field.
+    event.target.dispatchEvent(new Event("input", { bubbles: true }));
 
     if (pair.forward.value && pair.reverse.value) {
       // Mark a primer pair in the gene sequence after it's pasted.
@@ -212,9 +215,6 @@ eventMap.click.push((pair, event) => {
   const product = seqText.substring(forwardIndex, reverseEndIndex);
   pair.productLength.value = product.length;
   pair.productLength.show();
-
-  pair.forward.dataset.cachedValue = forwardValue;
-  pair.reverse.dataset.cachedValue = reverseValue;
 });
 
 // Copy information about a primer pair to the clipboard.
@@ -243,24 +243,27 @@ eventMap.click.push((pair, event) => {
   }
 });
 
-// Hide the product length of a primer pair when any of the primers
-// are modified. If the primer pair is marked in the sequence, unmark it.
-eventMap.keyup.push((pair, event) => {
+// Hide the product length of a primer pair when either of the primers
+// is modified. If the primer pair is marked in the sequence, unmark it.
+eventMap.input.push((pair, event) => {
   if (!isTargetPrimer(pair, event)) {
     return;
   }
 
-  const { value, dataset } = event.target;
+  const { data } = event;
+  const { value } = event.target;
+
+  // Ignore cases where only whitespaces were added to either side of a primer.
+  if (data && !data.trim() && !value.includes(" ")) {
+    return;
+  }
 
   if (value) {
     showRemoveButton();
   }
 
-  if (dataset.cachedValue && dataset.cachedValue !== value) {
-    pair.productLength.hide();
-    fn.unmark(pair);
-    dataset.cachedValue = value;
-  }
+  pair.productLength.hide();
+  fn.unmark(pair);
 });
 
 function isClickValid(pair, event, intendedTarget) {
