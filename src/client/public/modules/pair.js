@@ -97,19 +97,14 @@ class ProductLength {
   }
 
   get value() {
-    const { textContent } = this.#element;
-
-    return textContent.includes("{pl}")
-      ? undefined
-      : textContent.match(rproductLength)[0];
+    return this.#element.textContent.match(rproductLength)[0];
   }
 
   set value(value) {
-    const { textContent } = this.#element;
-
-    this.#element.textContent = textContent.includes("{pl}")
-      ? textContent.replace("{pl}", value)
-      : textContent.replace(rproductLength, value);
+    this.#element.textContent = this.#element.textContent.replace(
+      rproductLength,
+      value
+    );
   }
 
   show() {
