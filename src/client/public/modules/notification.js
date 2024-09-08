@@ -69,6 +69,10 @@ export const eNetworkError =
   "Network error: unable to connect to server. " +
   "Check your internet connection and try again.";
 
+export const eNoForward = "Forward primer is not specified.";
+
+export const eNoReverse = "Reverse primer is not specified.";
+
 /////////////////////
 /// BUTTON TITLES ///
 

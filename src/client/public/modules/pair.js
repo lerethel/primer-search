@@ -264,12 +264,15 @@ eventMap.keyup.push((pair, event) => {
 });
 
 function isClickValid(pair, event, intendedTarget) {
-  return (
-    cE.seq.textContent &&
-    pair.forward.value &&
-    pair.reverse.value &&
-    intendedTarget.contains(event.target)
-  );
+  if (!intendedTarget.contains(event.target)) {
+    return false;
+  }
+
+  fn.error(not.eNoSequence, !cE.seq.textContent);
+  fn.error(not.eNoForward, !pair.forward.value);
+  fn.error(not.eNoReverse, !pair.reverse.value);
+
+  return true;
 }
 
 function isTargetPrimer(pair, event) {
