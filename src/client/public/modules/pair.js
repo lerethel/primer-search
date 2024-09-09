@@ -1,3 +1,5 @@
+import Mark from "https://cdn.jsdelivr.net/npm/mark.js@8.11.1/+esm";
+
 import * as cE from "./const-elem.js";
 import * as css from "./css-attr.js";
 import * as fn from "./fn.js";
@@ -14,7 +16,10 @@ function hideRemoveButton() {
   cE.primerPairList.classList.remove(css.removeBtnShownClass);
 }
 
+const markContext = new Mark(cE.seq);
+
 let pairCache = [];
+let markedPair;
 
 class PrimerPair {
   pair = cE.primerPairTemplate.content.cloneNode(true).children[0];
@@ -55,12 +60,40 @@ class PrimerPair {
 
   remove(leaveEmpty) {
     this.pair.remove();
-    fn.unmark(this);
+    this.unmark();
     pairCache = pairCache.filter((instance) => instance !== this);
 
     if (leaveEmpty && !pairCache.length) {
       appendEmpty();
       hideRemoveButton();
+    }
+  }
+
+  mark() {
+    this.pair.classList.add(css.markedPrimerPairClass);
+
+    markContext.mark(this.forward.value, {
+      acrossElements: true,
+      className: css.forwardMarkClass,
+    });
+
+    markContext.mark(fn.reverseComplement(this.reverse.value), {
+      acrossElements: true,
+      className: css.reverseMarkClass,
+    });
+
+    markedPair = this;
+
+    cE.seq
+      .getElementsByTagName("mark")[0]
+      .scrollIntoView({ behavior: "smooth" });
+  }
+
+  unmark() {
+    if (markedPair && this === markedPair) {
+      markContext.unmark();
+      this.pair.classList.remove(css.markedPrimerPairClass);
+      markedPair = undefined;
     }
   }
 
@@ -85,6 +118,10 @@ export function populateFromJSON(json) {
   json.forEach(({ forward, reverse, length }) => {
     new PrimerPair(forward, reverse, length).append();
   });
+}
+
+function unmarkAny() {
+  markedPair?.unmark();
 }
 
 const rproductLength = /\d+/;
@@ -188,7 +225,7 @@ eventMap.click.push((pair, event) => {
   const reverseEndIndex = reverseIndex + reversedReverseValue.length;
 
   // Unmark everything now in case of errors.
-  fn.unmark();
+  unmarkAny();
 
   // Check that the primers are in the sequence.
   fn.error(not.eForwardPrimerNotFound, forwardIndex < 0);
@@ -210,7 +247,7 @@ eventMap.click.push((pair, event) => {
     seqText.includes(reversedReverseValue, reverseEndIndex)
   );
 
-  fn.mark(pair);
+  pair.mark();
 
   const product = seqText.substring(forwardIndex, reverseEndIndex);
   pair.productLength.value = product.length;
@@ -263,7 +300,7 @@ eventMap.input.push((pair, event) => {
   }
 
   pair.productLength.hide();
-  fn.unmark(pair);
+  pair.unmark();
 });
 
 function isClickValid(pair, event, intendedTarget) {

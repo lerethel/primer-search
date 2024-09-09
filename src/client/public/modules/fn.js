@@ -1,50 +1,8 @@
-import Mark from "https://cdn.jsdelivr.net/npm/mark.js@8.11.1/+esm";
 import Toastify from "https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/+esm";
 
 import * as cE from "./const-elem.js";
 import * as css from "./css-attr.js";
 import * as not from "./notification.js";
-
-////////////
-/// MARK ///
-
-let markedPrimerPair;
-
-const markInstance = new Mark(cE.seq);
-
-export function mark(primer) {
-  primer.pair.classList.add(css.markedPrimerPairClass);
-
-  markInstance.mark(primer.forward.value, {
-    acrossElements: true,
-    className: css.forwardMarkClass,
-  });
-
-  markInstance.mark(reverseComplement(primer.reverse.value), {
-    acrossElements: true,
-    className: css.reverseMarkClass,
-  });
-
-  markedPrimerPair = primer.pair;
-
-  cE.seq.getElementsByTagName("mark")[0].scrollIntoView({
-    behavior: "smooth",
-  });
-}
-
-export function unmark(primer) {
-  if (!markedPrimerPair) {
-    return;
-  }
-
-  if (primer && primer.pair !== markedPrimerPair) {
-    return;
-  }
-
-  markInstance.unmark();
-  markedPrimerPair.classList.remove(css.markedPrimerPairClass);
-  markedPrimerPair = undefined;
-}
 
 ////////////////
 /// TOASTIFY ///
