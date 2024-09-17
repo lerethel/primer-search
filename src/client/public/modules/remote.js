@@ -110,9 +110,8 @@ function createPrimerPoller(jobKey, interval) {
         fn.error(primerJSON.message);
       }
 
-      fn.info(primerJSON.message);
       primerTimer = setTimeout(poller, interval);
-      return;
+      return fn.info(primerJSON.message);
     }
 
     pair.populateFromJSON(primerJSON);

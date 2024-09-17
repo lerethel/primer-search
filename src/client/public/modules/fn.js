@@ -85,9 +85,8 @@ export function joinExons(fastaSeq) {
   }
 
   if (!rexonHeader.test(fastaSeq)) {
-    info(not.iExonsNotSeparated);
     cE.seq.textContent = fastaSeq;
-    return;
+    return info(not.iExonsNotSeparated);
   }
 
   const fragment = new DocumentFragment();
