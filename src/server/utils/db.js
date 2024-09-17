@@ -21,7 +21,6 @@ export function init() {
     CREATE TABLE IF NOT EXISTS primer (
         id PRIMARY KEY,
         job_key,
-        job_timestamp,
         data
     );`,
     () => db.close()

@@ -158,15 +158,8 @@ export async function initSearch(req, res) {
 
   res.json({ job_key: jobKey });
   select
-    ? db.run("UPDATE primer SET job_key = ?, job_timestamp = ? WHERE id = ?;", [
-        jobKey,
-        Date.now(),
-        id,
-      ])
-    : db.run(
-        "INSERT INTO primer (id, job_key, job_timestamp) VALUES (?, ?, ?);",
-        [id, jobKey, Date.now()]
-      );
+    ? db.run("UPDATE primer SET job_key = ? WHERE id = ?;", [jobKey, id])
+    : db.run("INSERT INTO primer (id, job_key) VALUES (?, ?);", [id, jobKey]);
 }
 
 export async function getPrimers(req, res) {
