@@ -8,13 +8,11 @@ import * as not from "./notification.js";
 /////////////////////////////////////
 /// METHODS FOR OPERATING THE DOM ///
 
-function showRemoveButton() {
+const showRemoveButton = () =>
   cE.primerPairList.classList.add(css.removeBtnShownClass);
-}
 
-function hideRemoveButton() {
+const hideRemoveButton = () =>
   cE.primerPairList.classList.remove(css.removeBtnShownClass);
-}
 
 const markContext = new Mark(cE.seq);
 
@@ -102,27 +100,23 @@ class PrimerPair {
   }
 }
 
-export function appendEmpty() {
-  return new PrimerPair().append();
-}
+export const appendEmpty = () => new PrimerPair().append();
 
-export function removeAll(leaveEmpty) {
+export const removeAll = (leaveEmpty) => {
   let count = pairCache.length;
   while (count--) {
     pairCache[count].remove(leaveEmpty);
   }
-}
+};
 
-export function populateFromJSON(json) {
+export const populateFromJSON = (json) => {
   removeAll();
   json.forEach(({ forward, reverse, length }) => {
     new PrimerPair(forward, reverse, length).append();
   });
-}
+};
 
-function unmarkAny() {
-  markedPair?.unmark();
-}
+const unmarkAny = () => markedPair?.unmark();
 
 const rproductLength = /\d+/;
 
@@ -160,7 +154,7 @@ class ProductLength {
 ///////////////////////////////////
 /// METHODS FOR HANDLING EVENTS ///
 
-export function handleEvent(event) {
+export const handleEvent = (event) => {
   const pair = PrimerPair.find(event.target.closest("." + css.primerPairClass));
 
   if (!pair) {
@@ -171,7 +165,7 @@ export function handleEvent(event) {
   pair.reverse.value = pair.reverse.value.trim();
 
   eventMap[event.type].forEach((callback) => callback(pair, event));
-}
+};
 
 const eventMap = { paste: [], click: [], input: [] };
 
@@ -303,7 +297,7 @@ eventMap.input.push((pair, event) => {
   pair.unmark();
 });
 
-function isClickValid(pair, event, intendedTarget) {
+const isClickValid = (pair, event, intendedTarget) => {
   if (!intendedTarget.contains(event.target)) {
     return false;
   }
@@ -313,8 +307,7 @@ function isClickValid(pair, event, intendedTarget) {
   fn.error(not.eNoReverse, !pair.reverse.value);
 
   return true;
-}
+};
 
-function isTargetPrimer(pair, event) {
-  return event.target === pair.forward || event.target === pair.reverse;
-}
+const isTargetPrimer = (pair, event) =>
+  event.target === pair.forward || event.target === pair.reverse;

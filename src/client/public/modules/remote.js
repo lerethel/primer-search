@@ -8,7 +8,7 @@ const taxonRequest = new fn.SingletonRequest("/ensembl/taxon");
 
 let taxonTimer;
 
-export function findTaxons() {
+export const findTaxons = () => {
   const search = fn.capitalize(cE.species.value.trim());
 
   if (search.length < taxonMinLength) {
@@ -41,12 +41,12 @@ export function findTaxons() {
 
     cE.speciesList.replaceChildren(fragment);
   }, 1000);
-}
+};
 
 const rtaxid = /\s*\(taxid.+$/;
 const seqRequest = new fn.SingletonRequest("/ensembl/sequence");
 
-export async function findSeq() {
+export const findSeq = async () => {
   const species = cE.species.value.replace(rtaxid, "").trim();
   const gene = cE.geneName.value.trim();
 
@@ -60,13 +60,13 @@ export async function findSeq() {
 
   fn.joinExons((await response.json()).sequence);
   fn.success(not.sSequenceDownloaded);
-}
+};
 
 const primerRequest = new fn.SingletonRequest("/blast/search");
 
 let primerTimer;
 
-export async function findPrimers() {
+export const findPrimers = async () => {
   const species = cE.species.value.trim();
   const sequence = cE.seq.textContent;
   const onSpliceSite = cE.mustSpanJunction.checked ? 1 : 0;
@@ -94,10 +94,10 @@ export async function findPrimers() {
   fn.error(initJSON.message, !initResponse.ok);
 
   createPrimerPoller(initJSON.job_key, 30000)();
-}
+};
 
-function createPrimerPoller(jobKey, interval) {
-  return async function poller() {
+const createPrimerPoller = (jobKey, interval) =>
+  async function poller() {
     const primerResponse = await primerRequest.send(
       { job_key: jobKey },
       { cache: "no-store" }
@@ -117,4 +117,3 @@ function createPrimerPoller(jobKey, interval) {
     pair.populateFromJSON(primerJSON);
     fn.success(not.sPrimersDownloaded);
   };
-}

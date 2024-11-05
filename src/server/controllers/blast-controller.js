@@ -4,7 +4,7 @@ import { URL } from "url";
 import blastDefaults from "../config/blast-defaults.js";
 import * as db from "../utils/db.js";
 
-function buildBLASTForm(options) {
+const buildBLASTForm = (options) => {
   const form = new FormData();
   const totalOptions = { ...blastDefaults, ...options };
 
@@ -13,17 +13,13 @@ function buildBLASTForm(options) {
   }
 
   return form;
-}
+};
 
 const rnewLine = /[\r\n]/g;
 
-function cleanMessage(message) {
-  return message.trim().replace(rnewLine, "");
-}
+const cleanMessage = (message) => message.trim().replace(rnewLine, "");
 
-async function responseToDOM(response) {
-  return parseHTML(await response.text());
-}
+const responseToDOM = async (response) => parseHTML(await response.text());
 
 const blastURL =
   "https://www.ncbi.nlm.nih.gov/tools/primer-blast/primertool.cgi";
@@ -97,7 +93,7 @@ parserBySelector.set(selectorAlias.default, () => {
   };
 });
 
-async function isJobActive(req, res, jobKey) {
+const isJobActive = async (req, res, jobKey) => {
   const response = await fetch(`${blastURL}?job_key=${jobKey}`);
   const document = await responseToDOM(response);
 
@@ -115,9 +111,9 @@ async function isJobActive(req, res, jobKey) {
   }
 
   return false;
-}
+};
 
-export async function initSearch(req, res) {
+export const initSearch = async (req, res) => {
   const { sequence, species, onSpliceSite, maxProductLength } = req.body;
 
   const options = {
@@ -160,9 +156,9 @@ export async function initSearch(req, res) {
   select
     ? db.run("UPDATE primer SET job_key = ? WHERE id = ?;", [jobKey, id])
     : db.run("INSERT INTO primer (id, job_key) VALUES (?, ?);", [id, jobKey]);
-}
+};
 
-export async function getPrimers(req, res) {
+export const getPrimers = async (req, res) => {
   const jobKey = req.query.job_key;
   const select = await db.get("SELECT data FROM primer WHERE job_key = ?;", [
     jobKey,
@@ -197,4 +193,4 @@ export async function getPrimers(req, res) {
 
     return res.status(status).json(data);
   }
-}
+};

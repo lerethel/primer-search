@@ -14,27 +14,24 @@ const toastDefaults = {
   close: true,
 };
 
-function showToast(options, condition = true) {
+const showToast = (options, condition = true) => {
   if (condition) {
     Toastify({ ...options, ...toastDefaults }).showToast();
   }
-}
+};
 
-export function info(text, condition) {
-  showToast({ text }, condition);
-}
+export const info = (text, condition) => showToast({ text }, condition);
 
-export function success(text, condition) {
+export const success = (text, condition) =>
   showToast({ text, className: "success-toast" }, condition);
-}
 
-export function error(text, condition = true) {
+export const error = (text, condition = true) => {
   showToast({ text, className: "error-toast" }, condition);
 
   if (condition) {
     throw new Error(text);
   }
-}
+};
 
 //////////////
 /// SERVER ///
@@ -77,7 +74,7 @@ export class SingletonRequest {
 const rexonHeader = /^\s*>.+?$/m;
 const rwhitespace = /\s+/g;
 
-export function joinExons(fastaSeq) {
+export const joinExons = (fastaSeq) => {
   fastaSeq = fastaSeq.trim();
 
   if (!fastaSeq) {
@@ -106,24 +103,17 @@ export function joinExons(fastaSeq) {
   });
 
   cE.seq.replaceChildren(fragment);
-}
-
-const rnucleobases = /[ATGC]/g;
-const basePairs = {
-  A: "T",
-  G: "C",
-  T: "A",
-  C: "G",
 };
 
-export function reverseComplement(primerSeq) {
-  return primerSeq
+const rnucleobases = /[ATGC]/g;
+const basePairs = { A: "T", G: "C", T: "A", C: "G" };
+
+export const reverseComplement = (primerSeq) =>
+  primerSeq
     .split("")
     .reverse()
     .join("")
     .replace(rnucleobases, (base) => basePairs[base]);
-}
 
-export function capitalize(text) {
-  return text ? text[0].toUpperCase() + text.slice(1) : "";
-}
+export const capitalize = (text) =>
+  text ? text[0].toUpperCase() + text.slice(1) : "";

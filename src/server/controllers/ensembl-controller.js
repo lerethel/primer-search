@@ -1,7 +1,7 @@
 import ensemblDefaults from "../config/ensembl-defaults.js";
 import * as db from "../utils/db.js";
 
-function buildEnsemblQuery(json, species) {
+const buildEnsemblQuery = (json, species) => {
   const suffixSplit = json.canonical_transcript.split(".");
 
   return new URLSearchParams({
@@ -13,11 +13,11 @@ function buildEnsemblQuery(json, species) {
       name: `${species}_${suffixSplit[0]}_${suffixSplit[1]}_sequence`,
     },
   });
-}
+};
 
 const rwhitespace = /\s+/g;
 
-export async function getSequence(req, res) {
+export const getSequence = async (req, res) => {
   const { gene } = req.query;
   const species = req.query.species.replace(rwhitespace, "_");
   const id = `${gene}/${species}`;
@@ -47,9 +47,9 @@ export async function getSequence(req, res) {
 
   res.json(data);
   db.run("INSERT INTO sequence VALUES (?, ?);", [id, JSON.stringify(data)]);
-}
+};
 
-export async function getTaxon(req, res) {
+export const getTaxon = async (req, res) => {
   const { search } = req.query;
   const select = await db.get("SELECT data FROM taxon WHERE id = ?;", [search]);
 
@@ -73,4 +73,4 @@ export async function getTaxon(req, res) {
 
   res.json(data);
   db.run("INSERT INTO taxon VALUES (?, ?);", [search, JSON.stringify(data)]);
-}
+};

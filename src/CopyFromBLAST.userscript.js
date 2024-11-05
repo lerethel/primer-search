@@ -5,7 +5,7 @@
 // @match        https://www.ncbi.nlm.nih.gov/tools/primer-blast/primertool.cgi?*
 // ==/UserScript==
 
-(function () {
+(() => {
   "use strict";
 
   const container = document.createElement("div");
