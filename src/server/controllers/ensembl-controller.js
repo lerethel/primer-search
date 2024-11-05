@@ -7,10 +7,10 @@ export const getSequence = async (req, res) => {
   const { gene } = req.query;
   const species = req.query.species.replace(rwhitespace, "_");
   const id = `${gene}/${species}`;
-  const select = await db.get("SELECT data FROM sequence WHERE id = ?;", [id]);
+  const cache = await db.get("SELECT data FROM sequence WHERE id = ?;", [id]);
 
-  if (select) {
-    return res.json(JSON.parse(select.data));
+  if (cache) {
+    return res.json(JSON.parse(cache.data));
   }
 
   const seqInfoResponse = await fetch(
@@ -37,10 +37,10 @@ export const getSequence = async (req, res) => {
 
 export const getTaxon = async (req, res) => {
   const { search } = req.query;
-  const select = await db.get("SELECT data FROM taxon WHERE id = ?;", [search]);
+  const cache = await db.get("SELECT data FROM taxon WHERE id = ?;", [search]);
 
-  if (select) {
-    return res.json(JSON.parse(select.data));
+  if (cache) {
+    return res.json(JSON.parse(cache.data));
   }
 
   const response = await fetch(
@@ -52,9 +52,7 @@ export const getTaxon = async (req, res) => {
   }
 
   const data = (await response.json())
-    .map((taxon) => {
-      return { id: taxon.id, scientific_name: taxon.scientific_name };
-    })
+    .map((taxon) => ({ id: taxon.id, scientific_name: taxon.scientific_name }))
     .sort((a, b) => a.scientific_name.length - b.scientific_name.length);
 
   res.json(data);

@@ -28,7 +28,7 @@ export const selectorAlias = {
   default: "html",
 };
 
-export const isJobActive = async (req, res, jobKey) => {
+export const isJobActive = async (jobKey) => {
   const response = await fetch(`${blastURL}?job_key=${jobKey}`);
   const document = await responseToDOM(response);
 

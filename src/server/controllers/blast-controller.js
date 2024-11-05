@@ -22,13 +22,10 @@ export const initSearch = async (req, res) => {
   };
 
   const id = hash("sha1", JSON.stringify(options));
-  const select = await db.get("SELECT * FROM primer WHERE id = ?;", [id]);
+  const cache = await db.get("SELECT * FROM primer WHERE id = ?;", [id]);
 
-  if (
-    select &&
-    (select.data || (await isJobActive(req, res, select.job_key)))
-  ) {
-    return res.json({ job_key: select.job_key });
+  if (cache && (cache.data || (await isJobActive(cache.job_key)))) {
+    return res.json({ job_key: cache.job_key });
   }
 
   const response = await fetch(blastURL, {
@@ -48,19 +45,19 @@ export const initSearch = async (req, res) => {
   const jobKey = URL.parse(retryURL).searchParams.get("job_key");
 
   res.json({ job_key: jobKey });
-  select
+  cache
     ? db.run("UPDATE primer SET job_key = ? WHERE id = ?;", [jobKey, id])
     : db.run("INSERT INTO primer (id, job_key) VALUES (?, ?);", [id, jobKey]);
 };
 
 export const getPrimers = async (req, res) => {
   const jobKey = req.query.job_key;
-  const select = await db.get("SELECT data FROM primer WHERE job_key = ?;", [
+  const cache = await db.get("SELECT data FROM primer WHERE job_key = ?;", [
     jobKey,
   ]);
 
-  if (select?.data) {
-    return res.json(JSON.parse(select.data));
+  if (cache?.data) {
+    return res.json(JSON.parse(cache.data));
   }
 
   const response = await fetch(`${blastURL}?job_key=${jobKey}`);
