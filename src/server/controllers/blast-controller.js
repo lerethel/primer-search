@@ -40,8 +40,6 @@ export const initSearch = async (req, res) => {
 
   if (!retryURL) {
     const { status, data } = parserBySelector.get(selectorAlias.error)(
-      req,
-      res,
       (await responseToDOM(response)).querySelector(selectorAlias.error)
     );
     return res.status(status).json(data);
@@ -75,7 +73,7 @@ export const getPrimers = async (req, res) => {
       continue;
     }
 
-    const { status, valid, data } = parser(req, res, element);
+    const { status, valid, data } = parser(element);
 
     if (!valid) {
       continue;

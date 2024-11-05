@@ -36,11 +36,7 @@ export const isJobActive = async (req, res, jobKey) => {
     const element = document.querySelector(selector);
 
     if (element) {
-      const { valid, status } = parserBySelector.get(selector)(
-        req,
-        res,
-        element
-      );
+      const { valid, status } = parserBySelector.get(selector)(element);
       return valid && status < 400;
     }
   }
@@ -56,14 +52,14 @@ const blastPrefix = "Primer-BLAST: ";
 // Use a Map to control the order in which they are run, along with a validity check.
 export const parserBySelector = new Map();
 
-parserBySelector.set(selectorAlias.status, (req, res, element) => {
+parserBySelector.set(selectorAlias.status, (element) => {
   const messageElement = element.getElementsByTagName("td")[1];
   // Remove links since they serve as buttons here and aren't related to the text.
   messageElement.getElementsByTagName("a").forEach((link) => link.remove());
   const message = messageElement.textContent;
 
   return rerrorStatus.test(message)
-    ? parserBySelector.get(selectorAlias.error)(req, res, messageElement)
+    ? parserBySelector.get(selectorAlias.error)(messageElement)
     : {
         status: 202,
         valid: message.length > 0,
@@ -71,7 +67,7 @@ parserBySelector.set(selectorAlias.status, (req, res, element) => {
       };
 });
 
-parserBySelector.set(selectorAlias.primer, (req, res, element) => {
+parserBySelector.set(selectorAlias.primer, (element) => {
   const entries = element
     .getElementsByTagName("th")
     .filter((th) => rprimerField.test(th.textContent));
@@ -90,7 +86,7 @@ parserBySelector.set(selectorAlias.primer, (req, res, element) => {
   return { status: 200, valid: primerInfo.length > 0, data: primerInfo };
 });
 
-parserBySelector.set(selectorAlias.error, (req, res, element) => {
+parserBySelector.set(selectorAlias.error, (element) => {
   const message = element.textContent;
 
   return {
