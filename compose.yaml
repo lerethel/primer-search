@@ -1,0 +1,16 @@
+services:
+  primer-search:
+    image: primer-search
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - SKIP_CLOSE_MESSAGE=true
+    ports:
+      - 3000:3000
+    volumes:
+      - cache:/primer-search/cache
+    command: npm run start
+
+volumes:
+  cache:

@@ -1,8 +1,7 @@
 import path from "path";
 import sqlite3 from "sqlite3";
 
-const open = () =>
-  new sqlite3.Database(path.join(import.meta.dirname, "..", "cache.db"));
+const open = () => new sqlite3.Database(path.join("cache", "cache.db"));
 
 export const init = () => {
   const db = open();
