@@ -1,9 +1,14 @@
+import fs from "fs";
 import path from "path";
 import sqlite3 from "sqlite3";
 
 const open = () => new sqlite3.Database(path.join("cache", "cache.db"));
 
 export const init = () => {
+  if (!fs.existsSync("cache")) {
+    fs.mkdirSync("cache");
+  }
+
   const db = open();
 
   db.exec(
